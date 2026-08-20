@@ -6,7 +6,7 @@
     "dev": "concurrently -n server,client -c blue,green \"npm:dev --prefix server\" \"npm:dev --prefix client\"",
     "build": "npm run build --prefix client",
     "start": "npm run build && npm start --prefix server",
-    "render-build": "npm install --prefix server && rm -rf client/node_modules client/package-lock.json && npm install --prefix client && npm run build --prefix client"
+    "render-build": "npm install --prefix server && rm -rf client/node_modules client/package-lock.json && npm install --include=optional --prefix client && npm run build --prefix client"
   },
   "devDependencies": {
     "concurrently": "^9.1.0"
