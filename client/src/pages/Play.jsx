@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { socket } from "../socket.js";
 import { useCountdown } from "../useCountdown.js";
+import ResultBars from "../ResultBars.jsx";
 
 function getOrCreateToken() {
   let token = localStorage.getItem("quiz_player_token");
@@ -146,10 +147,18 @@ export default function Play() {
               不正解...
             </div>
           )}
-          <p style={{ marginTop: 16 }}>
-            正解: <b>{state.question.choices[state.question.correctIndex]}</b>
-          </p>
           <p className="dim">合計スコア: {me?.score ?? 0}</p>
+          {state.choiceCounts && (
+            <ResultBars
+              choices={state.question.choices}
+              correctIndex={state.question.correctIndex}
+              choiceCounts={state.choiceCounts}
+              myChoiceIndex={me?.lastChoiceIndex}
+            />
+          )}
+          {state.question.explanation && (
+            <div className="explanation-box">{state.question.explanation}</div>
+          )}
         </div>
       </div>
     );

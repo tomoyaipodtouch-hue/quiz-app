@@ -3,6 +3,7 @@ import { QRCodeSVG } from "qrcode.react";
 import { socket } from "../socket.js";
 import { useCountdown } from "../useCountdown.js";
 import { useJoinUrl } from "../useJoinUrl.js";
+import ResultBars from "../ResultBars.jsx";
 
 const CHOICE_LABELS = ["A", "B", "C", "D"];
 
@@ -92,21 +93,18 @@ export default function Display() {
       )}
 
       {state.status === "reveal" && state.question && (
-        <div style={{ width: "100%", maxWidth: 900 }}>
+        <div style={{ width: "100%", maxWidth: 700 }}>
           <h1 style={{ fontSize: "2.2rem", margin: "16px 0" }}>{state.question.text}</h1>
-          <div className="choice-grid">
-            {state.question.choices.map((c, i) => (
-              <div
-                key={i}
-                className={`choice-btn choice-${i} ${i === state.question.correctIndex ? "" : "dimmed"}`}
-                style={{ fontSize: "1.4rem" }}
-              >
-                {CHOICE_LABELS[i]}: {c}
-                {i === state.question.correctIndex ? " ✓" : ""}
-                {state.choiceCounts ? `  (${state.choiceCounts[i]})` : ""}
-              </div>
-            ))}
-          </div>
+          {state.choiceCounts && (
+            <ResultBars
+              choices={state.question.choices}
+              correctIndex={state.question.correctIndex}
+              choiceCounts={state.choiceCounts}
+            />
+          )}
+          {state.question.explanation && (
+            <div className="explanation-box">{state.question.explanation}</div>
+          )}
         </div>
       )}
 

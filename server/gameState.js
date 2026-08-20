@@ -191,6 +191,7 @@ export function getHostView() {
           choices: q.choices,
           correctIndex: q.correctIndex,
           timeLimit: q.timeLimit,
+          explanation: q.explanation ?? null,
         }
       : null,
     endsAt: state.currentQuestionEndsAt,
@@ -206,19 +207,24 @@ export function getHostView() {
   };
 }
 
+function isRevealing() {
+  return state.status === "reveal" || state.status === "leaderboard" || state.status === "ended";
+}
+
+function getChoiceCounts(q) {
+  const counts = new Array(q.choices.length).fill(0);
+  for (const p of playersArray()) {
+    if (p.lastChoiceIndex != null) counts[p.lastChoiceIndex] += 1;
+  }
+  return counts;
+}
+
 // 表示画面(投影用)向け：正解は reveal 以降のみ含める
 export function getDisplayView() {
   const q = currentQuestion();
-  const revealing = state.status === "reveal" || state.status === "leaderboard" || state.status === "ended";
+  const revealing = isRevealing();
   const answeredCount = playersArray().filter((p) => p.answered).length;
-
-  let choiceCounts = null;
-  if (revealing && q) {
-    choiceCounts = new Array(q.choices.length).fill(0);
-    for (const p of playersArray()) {
-      if (p.lastChoiceIndex != null) choiceCounts[p.lastChoiceIndex] += 1;
-    }
-  }
+  const choiceCounts = revealing && q ? getChoiceCounts(q) : null;
 
   return {
     role: "display",
@@ -231,6 +237,7 @@ export function getDisplayView() {
           choices: q.choices,
           timeLimit: q.timeLimit,
           correctIndex: revealing ? q.correctIndex : null,
+          explanation: revealing ? q.explanation ?? null : null,
         }
       : null,
     endsAt: state.currentQuestionEndsAt,
@@ -245,7 +252,8 @@ export function getDisplayView() {
 export function getPlayerView(token) {
   const player = state.players.get(token);
   const q = currentQuestion();
-  const revealing = state.status === "reveal" || state.status === "leaderboard" || state.status === "ended";
+  const revealing = isRevealing();
+  const choiceCounts = revealing && q ? getChoiceCounts(q) : null;
 
   return {
     role: "player",
@@ -258,9 +266,11 @@ export function getPlayerView(token) {
           choices: q.choices,
           timeLimit: q.timeLimit,
           correctIndex: revealing ? q.correctIndex : null,
+          explanation: revealing ? q.explanation ?? null : null,
         }
       : null,
     endsAt: state.currentQuestionEndsAt,
+    choiceCounts,
     me: player
       ? {
           name: player.name,

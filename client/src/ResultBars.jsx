@@ -1,0 +1,34 @@
+const CHOICE_LABELS = ["A", "B", "C", "D"];
+
+// 選択肢ごとの得票率バー。参加者画面・表示画面の両方で使う。
+export default function ResultBars({ choices, correctIndex, choiceCounts, myChoiceIndex }) {
+  const total = choiceCounts.reduce((sum, c) => sum + c, 0);
+
+  return (
+    <div className="result-list">
+      {choices.map((choice, i) => {
+        const count = choiceCounts[i] ?? 0;
+        const pct = total > 0 ? Math.round((count / total) * 100) : 0;
+        const isCorrect = i === correctIndex;
+        const isMine = myChoiceIndex === i;
+
+        return (
+          <div key={i} className={`result-row ${isCorrect ? "is-correct" : ""}`}>
+            <div className="result-row-head">
+              <span className="result-row-label">
+                {CHOICE_LABELS[i]}: {choice}
+              </span>
+              {isCorrect && <span className="result-badge correct">正解</span>}
+              {isMine && <span className="result-badge mine">あなたの回答</span>}
+              <span className="result-row-pct">{pct}%</span>
+            </div>
+            <div className="result-bar-track">
+              <div className="result-bar-fill" style={{ width: `${pct}%` }} />
+            </div>
+            <div className="result-row-votes">{count}票</div>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
