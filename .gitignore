@@ -1,3 +1,8 @@
 node_modules
 dist
 .env
+
+# Windows上で生成したロックファイルはLinux(Render)ビルド時にnpmの既知バグ
+# (optionalDependenciesの解決ミス, npm/cli#4828)を起こすため追跡しない。
+# 各環境でその都度 npm install させることで正しいプラットフォーム向けバイナリが入る。
+client/package-lock.json
