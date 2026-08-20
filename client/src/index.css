@@ -1,0 +1,269 @@
+:root {
+  --bg: #14162b;
+  --bg-soft: #1d2040;
+  --card: #262a4f;
+  --text: #f4f5fb;
+  --text-dim: #a4a8cf;
+  --accent: #6c5ce7;
+  --good: #2ecc71;
+  --bad: #e74c3c;
+  --choice-0: #e21b3c;
+  --choice-1: #1368ce;
+  --choice-2: #d89e00;
+  --choice-3: #26890c;
+  font-family: "Hiragino Sans", "Yu Gothic", system-ui, sans-serif;
+  color-scheme: dark;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.page {
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 24px;
+}
+
+.card {
+  background: var(--card);
+  border-radius: 16px;
+  padding: 24px;
+  width: 100%;
+  max-width: 480px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+}
+
+.title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 0 0 8px;
+}
+
+.dim {
+  color: var(--text-dim);
+}
+
+.btn {
+  border: none;
+  border-radius: 12px;
+  padding: 14px 20px;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: white;
+  background: var(--accent);
+  transition: transform 0.1s ease, opacity 0.1s ease;
+}
+
+.btn:active {
+  transform: scale(0.97);
+}
+
+.btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.btn-secondary {
+  background: var(--bg-soft);
+  border: 1px solid #3a3f6e;
+}
+
+.btn-danger {
+  background: var(--bad);
+}
+
+input[type="text"] {
+  width: 100%;
+  padding: 14px;
+  border-radius: 10px;
+  border: 1px solid #3a3f6e;
+  background: var(--bg-soft);
+  color: var(--text);
+  font-size: 1.05rem;
+}
+
+/* --- Choice grid (Play / Display common) --- */
+.choice-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  width: 100%;
+}
+
+.choice-btn {
+  border: none;
+  border-radius: 14px;
+  padding: 24px 16px;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: white;
+  min-height: 96px;
+  text-align: left;
+  line-height: 1.3;
+  opacity: 1;
+  transition: transform 0.1s ease, opacity 0.15s ease;
+}
+
+.choice-btn:active {
+  transform: scale(0.97);
+}
+
+.choice-btn.dimmed {
+  opacity: 0.35;
+}
+
+.choice-btn:disabled {
+  cursor: default;
+}
+
+.choice-0 {
+  background: var(--choice-0);
+}
+.choice-1 {
+  background: var(--choice-1);
+}
+.choice-2 {
+  background: var(--choice-2);
+}
+.choice-3 {
+  background: var(--choice-3);
+}
+
+.timer-bar-track {
+  width: 100%;
+  height: 10px;
+  background: var(--bg-soft);
+  border-radius: 6px;
+  overflow: hidden;
+  margin: 12px 0;
+}
+
+.timer-bar-fill {
+  height: 100%;
+  background: var(--accent);
+  transition: width 0.1s linear;
+}
+
+.badge {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 999px;
+  background: var(--bg-soft);
+  font-size: 0.8rem;
+  color: var(--text-dim);
+  margin-bottom: 12px;
+}
+
+.player-list {
+  list-style: none;
+  padding: 0;
+  margin: 12px 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 40vh;
+  overflow-y: auto;
+}
+
+.player-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--bg-soft);
+  border-radius: 10px;
+  padding: 10px 14px;
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+  margin-right: 8px;
+}
+
+.dot.online {
+  background: var(--good);
+}
+
+.dot.offline {
+  background: var(--text-dim);
+}
+
+.leaderboard-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--bg-soft);
+  border-radius: 12px;
+  padding: 14px 18px;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.leaderboard-rank {
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: var(--accent);
+  width: 2ch;
+}
+
+.control-grid {
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  gap: 20px;
+  width: 100%;
+  max-width: 1100px;
+  align-items: start;
+}
+
+@media (max-width: 800px) {
+  .control-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.btn-row {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 16px;
+}
+
+.display-fullscreen {
+  min-height: 100vh;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 32px;
+  text-align: center;
+}
+
+.qr-box {
+  background: white;
+  padding: 12px;
+  border-radius: 12px;
+  display: inline-block;
+}
