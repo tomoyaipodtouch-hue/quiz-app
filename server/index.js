@@ -20,6 +20,7 @@ import {
   getDisplayView,
   getPlayerView,
   getAllPlayerTokens,
+  getGameEpoch,
 } from "./gameState.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -77,6 +78,12 @@ io.on("connection", (socket) => {
     socketRole.set(socket.id, "display");
     socket.join("display");
     socket.emit("state", getDisplayView());
+  });
+
+  // 参加者ページがマウントされた直後に呼ばれる。今の世代IDを教えるだけで、
+  // まだプレイヤーとして登録しない(自動再参加すべきか判断するのはクライアント側)
+  socket.on("player:hello", () => {
+    socket.emit("epoch", { gameEpoch: getGameEpoch() });
   });
 
   socket.on("player:join", ({ token, name }) => {

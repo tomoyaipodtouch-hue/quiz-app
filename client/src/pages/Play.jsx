@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { socket } from "../socket.js";
 import ResultBars from "../ResultBars.jsx";
 import HistoryList from "../HistoryList.jsx";
@@ -23,25 +23,60 @@ export default function Play() {
   const [showHistory, setShowHistory] = useState(false);
   const [selectedChoice, setSelectedChoice] = useState(null);
   const token = getOrCreateToken();
+  const joinedRef = useRef(joined);
+  joinedRef.current = joined;
 
   useEffect(() => {
-    const onState = (s) => setState(s);
+    function onState(s) {
+      // 出題者がリセットすると自分の登録がサーバー側から消える。
+      // その場合は保存していた名前を破棄して、参加登録からやり直させる
+      if (joinedRef.current && s.me == null) {
+        localStorage.removeItem("quiz_player_name");
+        setJoined(false);
+        setName("");
+        setRenaming(false);
+        setShowHistory(false);
+      }
+      setState(s);
+    }
     socket.on("state", onState);
 
-    // 前回の名前が保存されていれば自動で再参加を試みる(リロード/再接続対策)
-    const savedName = localStorage.getItem("quiz_player_name");
-    if (savedName) {
-      socket.emit("player:join", { token, name: savedName });
-      setJoined(true);
+    // 今の世代IDを問い合わせて、保存されている名前が今のゲームのものであれば
+    // 自動で再参加する(リロード/再接続対策)。世代が古ければ(＝リセット後)
+    // 参加登録の画面からやり直させる
+    function onEpoch({ gameEpoch }) {
+      const savedEpoch = localStorage.getItem("quiz_game_epoch");
+      const savedName = localStorage.getItem("quiz_player_name");
+      if (savedName && savedEpoch === gameEpoch) {
+        socket.emit("player:join", { token, name: savedName });
+        setJoined(true);
+      } else {
+        localStorage.removeItem("quiz_player_name");
+        localStorage.setItem("quiz_game_epoch", gameEpoch);
+        setName("");
+      }
     }
+    socket.on("epoch", onEpoch);
+    socket.emit("player:hello");
 
-    return () => socket.off("state", onState);
+    return () => {
+      socket.off("state", onState);
+      socket.off("epoch", onEpoch);
+    };
   }, [token]);
 
   // 問題が切り替わったら選択状態をリセットする
   useEffect(() => {
     setSelectedChoice(null);
   }, [state?.questionIndex]);
+
+  // 再接続などで「既に回答済み」の状態から始まる場合、選択状態をそれに合わせる
+  useEffect(() => {
+    if (state?.status === "question" && state.me?.lastChoiceIndex != null && selectedChoice == null) {
+      setSelectedChoice(state.me.lastChoiceIndex);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [state?.me?.lastChoiceIndex, state?.status]);
 
   function handleJoin(e) {
     e.preventDefault();
@@ -171,37 +206,37 @@ function MainContent({ state, selectedChoice, setSelectedChoice, handleSubmitAns
     return (
       <div className="card">
         <div className="badge">
-          問題 {state.questionIndex + 1} / {state.quiz.totalQuestions}
+          {answered ? "回答を受け付けました" : `問題 ${state.questionIndex + 1} / ${state.quiz.totalQuestions}`}
         </div>
-        {answered ? (
-          <p style={{ textAlign: "center", fontWeight: 700, fontSize: "1.2rem" }}>
-            回答しました！出題者の発表をお待ちください...
-          </p>
-        ) : (
-          <>
-            <div className="choice-grid">
-              {state.question.choices.map((choice, i) => (
-                <button
-                  key={i}
-                  className={`choice-btn ${selectedChoice === i ? "selected" : ""}`}
-                  onClick={() => setSelectedChoice(i)}
-                >
-                  {CHOICE_LABELS[i]}: {choice}
-                </button>
-              ))}
-            </div>
-            <div className="btn-row">
+        <p style={{ fontSize: "1.15rem", fontWeight: 700, margin: "4px 0 16px" }}>{state.question.text}</p>
+        <>
+          <div className="choice-grid">
+            {state.question.choices.map((choice, i) => (
               <button
-                className="btn"
-                style={{ flex: 1 }}
-                disabled={selectedChoice == null}
-                onClick={handleSubmitAnswer}
+                key={i}
+                className={`choice-btn ${selectedChoice === i ? "selected" : ""}`}
+                onClick={() => setSelectedChoice(i)}
               >
-                送信する
+                {CHOICE_LABELS[i]}: {choice}
               </button>
-            </div>
-          </>
-        )}
+            ))}
+          </div>
+          {answered && (
+            <p className="dim" style={{ textAlign: "center", marginTop: 12, fontSize: "0.85rem" }}>
+              発表までは選択を変更できます
+            </p>
+          )}
+          <div className="btn-row">
+            <button
+              className="btn"
+              style={{ flex: 1 }}
+              disabled={selectedChoice == null}
+              onClick={handleSubmitAnswer}
+            >
+              {answered ? "回答を変更する" : "送信する"}
+            </button>
+          </div>
+        </>
       </div>
     );
   }

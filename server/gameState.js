@@ -10,7 +10,12 @@ const state = {
   currentQuestionIndex: -1,
   players: new Map(), // token -> { token, socketId, name, score, answered, lastCorrect, lastGained }
   history: [], // 出題済みの問題の結果(集計済み)。revealAnswer() のタイミングで積む
+  gameEpoch: randomUUID(), // リセットのたびに発行し直す世代ID。古い世代のブラウザは自動再参加させない
 };
+
+export function getGameEpoch() {
+  return state.gameEpoch;
+}
 
 let onChange = () => {};
 
@@ -63,22 +68,24 @@ export function kickPlayer(token) {
 }
 
 // 回答は送信されるだけで、この時点では結果を確定・通知しない。
-// 出題者が host:reveal を押すまで、正解かどうかは誰にも見せない。
+// 出題者が host:reveal を押すまで、正解かどうかは誰にも見せないし、
+// 発表前であれば同じ問題内で何度でも回答を変更できる。
 export function submitAnswer(token, choiceIndex) {
   if (state.status !== "question") return;
   const player = state.players.get(token);
-  if (!player || player.answered) return;
+  if (!player) return;
   const q = currentQuestion();
   if (!q) return;
 
-  player.answered = true;
   const correct = choiceIndex === q.correctIndex;
   const gained = correct ? POINTS_PER_CORRECT : 0;
 
+  // 既に回答済みの場合、前回分の得点を差し引いてから今回の分を加える
+  player.score += gained - (player.lastGained ?? 0);
+  player.answered = true;
   player.lastCorrect = correct;
   player.lastGained = gained;
   player.lastChoiceIndex = choiceIndex;
-  player.score += gained;
 
   notify();
 }
@@ -161,6 +168,7 @@ export function resetGame() {
   state.currentQuestionIndex = -1;
   state.players.clear();
   state.history = [];
+  state.gameEpoch = randomUUID();
   notify();
 }
 
