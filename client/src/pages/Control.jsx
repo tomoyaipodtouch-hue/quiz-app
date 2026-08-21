@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { socket } from "../socket.js";
 import { useJoinUrl } from "../useJoinUrl.js";
+import HistoryList from "../HistoryList.jsx";
 
 const STATUS_LABEL = {
   lobby: "待機中",
@@ -12,6 +13,7 @@ const STATUS_LABEL = {
 
 export default function Control() {
   const [state, setState] = useState(null);
+  const [showHistory, setShowHistory] = useState(false);
   const joinUrls = useJoinUrl();
 
   useEffect(() => {
@@ -167,6 +169,17 @@ export default function Control() {
             {state.players.length === 0 && <li className="dim">まだ誰も参加していません</li>}
           </ul>
         </div>
+      </div>
+
+      <div style={{ width: "100%", maxWidth: 1100, margin: "20px auto 0" }}>
+        <button className="btn-chip" onClick={() => setShowHistory((v) => !v)}>
+          {showHistory ? "過去の問題を隠す" : `過去の問題を見る (${state.history.length})`}
+        </button>
+        {showHistory && (
+          <div style={{ marginTop: 16 }}>
+            <HistoryList history={state.history} totalQuestions={state.quiz.totalQuestions} />
+          </div>
+        )}
       </div>
     </div>
   );

@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { QRCodeSVG } from "qrcode.react";
 import { socket } from "../socket.js";
-import { useCountdown } from "../useCountdown.js";
 import { useJoinUrl } from "../useJoinUrl.js";
 import ResultBars from "../ResultBars.jsx";
 
@@ -18,11 +17,6 @@ export default function Display() {
     socket.on("state", onState);
     return () => socket.off("state", onState);
   }, []);
-
-  const remainingMs = useCountdown(state?.status === "question" ? state.endsAt : null);
-  const remainingRatio = state?.question
-    ? Math.min(1, remainingMs / (state.question.timeLimit * 1000))
-    : 0;
 
   function enterFullscreen() {
     rootRef.current?.requestFullscreen?.();
@@ -73,10 +67,7 @@ export default function Display() {
       {state.status === "question" && state.question && (
         <div style={{ width: "100%", maxWidth: 900 }}>
           <div className="badge">
-            問題 {state.questionIndex + 1} / {state.quiz.totalQuestions}
-          </div>
-          <div className="timer-bar-track">
-            <div className="timer-bar-fill" style={{ width: `${remainingRatio * 100}%` }} />
+            問題 {state.questionIndex + 1} / {state.quiz.totalQuestions} · 回答受付中
           </div>
           <h1 style={{ fontSize: "2.2rem", margin: "16px 0" }}>{state.question.text}</h1>
           <div className="choice-grid">
