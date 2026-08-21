@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { socket } from "../socket.js";
 import { useJoinUrl } from "../useJoinUrl.js";
 import HistoryList from "../HistoryList.jsx";
+import ThemeToggle from "../ThemeToggle.jsx";
 
 const STATUS_LABEL = {
   lobby: "待機中",
@@ -41,6 +42,7 @@ export default function Control() {
 
   return (
     <div className="page" style={{ alignItems: "stretch" }}>
+      <ThemeToggle style={{ position: "fixed", top: 16, right: 16 }} />
       <div className="control-grid">
         <div className="card" style={{ maxWidth: "none" }}>
           <div className="badge">{STATUS_LABEL[state.status]}</div>

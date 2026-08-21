@@ -1,4 +1,5 @@
 const CHOICE_LABELS = ["A", "B", "C", "D"];
+const CHART_COLORS = ["var(--chart-a)", "var(--chart-b)", "var(--chart-c)", "var(--chart-d)"];
 
 // 選択肢ごとの得票率バー。参加者画面・表示画面の両方で使う。
 export default function ResultBars({ choices, correctIndex, choiceCounts, myChoiceIndex }) {
@@ -23,7 +24,10 @@ export default function ResultBars({ choices, correctIndex, choiceCounts, myChoi
               <span className="result-row-pct">{pct}%</span>
             </div>
             <div className="result-bar-track">
-              <div className="result-bar-fill" style={{ width: `${pct}%` }} />
+              <div
+                className="result-bar-fill"
+                style={{ width: `${pct}%`, background: CHART_COLORS[i] }}
+              />
             </div>
             <div className="result-row-votes">{count}票</div>
           </div>

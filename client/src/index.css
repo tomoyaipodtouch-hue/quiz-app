@@ -1,4 +1,5 @@
 :root {
+  /* ダークがこのアプリの既定テーマ */
   --bg: #0c0c10;
   --bg-soft: #19191f;
   --card: #19191f;
@@ -10,8 +11,39 @@
   --good: #22c55e;
   --bad: #ef4444;
   --purple: #8b5cf6;
+  --track: rgba(255, 255, 255, 0.08);
+
+  /* 選択肢A/B/C/D用の識別色(dataviz skillのカテゴリカルパレット準拠、
+     隣接比較は両モードでフルパス。バー・円グラフで共通使用) */
+  --chart-a: #3987e5;
+  --chart-b: #d95926;
+  --chart-c: #199e70;
+  --chart-d: #c98500;
+
   font-family: "M PLUS 1p", "Hiragino Sans", "Yu Gothic", system-ui, sans-serif;
   color-scheme: dark;
+}
+
+:root[data-theme="light"] {
+  --bg: #f5f5f5;
+  --bg-soft: #ececec;
+  --card: #ffffff;
+  --border: #e0e0e0;
+  --text: #0b0b0b;
+  --text-dim: #5c5c5c;
+  --accent: #2a78d6;
+  --bar: #eb6834;
+  --good: #0ca30c;
+  --bad: #d03b3b;
+  --purple: #4a3aa7;
+  --track: rgba(0, 0, 0, 0.08);
+
+  --chart-a: #2a78d6;
+  --chart-b: #eb6834;
+  --chart-c: #1baf7a;
+  --chart-d: #eda100;
+
+  color-scheme: light;
 }
 
 * {
@@ -310,7 +342,7 @@ input[type="text"] {
 
 .result-bar-track {
   height: 10px;
-  background: rgba(255, 255, 255, 0.08);
+  background: var(--track);
 }
 
 .result-bar-fill {
@@ -466,4 +498,25 @@ input[type="text"] {
   height: 12px;
   border-radius: 50%;
   flex-shrink: 0;
+}
+
+/* --- 送信済みの選択肢を示すタグ --- */
+.choice-submitted-tag {
+  display: inline-block;
+  margin-left: 8px;
+  padding: 2px 10px;
+  border-radius: 999px;
+  background: var(--accent);
+  color: white;
+  font-size: 0.75rem;
+  font-weight: 700;
+  vertical-align: middle;
+}
+
+.submit-feedback {
+  text-align: center;
+  margin-top: 12px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--good);
 }

@@ -1,5 +1,5 @@
 const CHOICE_LABELS = ["A", "B", "C", "D"];
-const SEGMENT_COLORS = ["var(--accent)", "var(--purple)", "var(--bar)", "var(--good)"];
+const SEGMENT_COLORS = ["var(--chart-a)", "var(--chart-b)", "var(--chart-c)", "var(--chart-d)"];
 
 // 選択肢ごとの割合を示すドーナツ円グラフ。凡例付き。
 export default function PieChart({ choiceCounts }) {

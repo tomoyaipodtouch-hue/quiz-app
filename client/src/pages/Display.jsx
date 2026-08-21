@@ -4,6 +4,7 @@ import { socket } from "../socket.js";
 import { useJoinUrl } from "../useJoinUrl.js";
 import ResultBars from "../ResultBars.jsx";
 import PieChart from "../PieChart.jsx";
+import ThemeToggle from "../ThemeToggle.jsx";
 
 const CHOICE_LABELS = ["A", "B", "C", "D"];
 
@@ -35,11 +36,12 @@ export default function Display() {
     <div className="display-fullscreen" ref={rootRef}>
       <button
         className="btn btn-secondary"
-        style={{ position: "fixed", top: 16, right: 16 }}
+        style={{ position: "fixed", top: 16, right: 140 }}
         onClick={enterFullscreen}
       >
         フルスクリーン
       </button>
+      <ThemeToggle style={{ position: "fixed", top: 16, right: 16 }} />
 
       {state.status === "lobby" && (
         <>

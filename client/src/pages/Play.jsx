@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { socket } from "../socket.js";
 import ResultBars from "../ResultBars.jsx";
 import HistoryList from "../HistoryList.jsx";
+import ThemeToggle from "../ThemeToggle.jsx";
 
 function getOrCreateToken() {
   let token = localStorage.getItem("quiz_player_token");
@@ -22,6 +23,7 @@ export default function Play() {
   const [renameValue, setRenameValue] = useState("");
   const [showHistory, setShowHistory] = useState(false);
   const [selectedChoice, setSelectedChoice] = useState(null);
+  const [justSubmitted, setJustSubmitted] = useState(false);
   const token = getOrCreateToken();
   const joinedRef = useRef(joined);
   joinedRef.current = joined;
@@ -90,6 +92,8 @@ export default function Play() {
   function handleSubmitAnswer() {
     if (selectedChoice == null) return;
     socket.emit("player:answer", { token, choiceIndex: selectedChoice });
+    setJustSubmitted(true);
+    setTimeout(() => setJustSubmitted(false), 1600);
   }
 
   function startRename() {
@@ -143,6 +147,7 @@ export default function Play() {
       <div className="player-topbar">
         <span className="player-topbar-name">{state.me?.name ?? name}</span>
         <div className="player-topbar-actions">
+          <ThemeToggle />
           <button className="btn-chip" onClick={startRename}>
             名前を変更
           </button>
@@ -184,6 +189,7 @@ export default function Play() {
             selectedChoice={selectedChoice}
             setSelectedChoice={setSelectedChoice}
             handleSubmitAnswer={handleSubmitAnswer}
+            justSubmitted={justSubmitted}
           />
         )}
       </div>
@@ -191,7 +197,7 @@ export default function Play() {
   );
 }
 
-function MainContent({ state, selectedChoice, setSelectedChoice, handleSubmitAnswer }) {
+function MainContent({ state, selectedChoice, setSelectedChoice, handleSubmitAnswer, justSubmitted }) {
   if (state.status === "lobby") {
     return (
       <div className="card" style={{ textAlign: "center" }}>
@@ -218,13 +224,20 @@ function MainContent({ state, selectedChoice, setSelectedChoice, handleSubmitAns
                 onClick={() => setSelectedChoice(i)}
               >
                 {CHOICE_LABELS[i]}: {choice}
+                {state.me?.lastChoiceIndex === i && (
+                  <span className="choice-submitted-tag">選択済み</span>
+                )}
               </button>
             ))}
           </div>
-          {answered && (
-            <p className="dim" style={{ textAlign: "center", marginTop: 12, fontSize: "0.85rem" }}>
-              発表までは選択を変更できます
-            </p>
+          {justSubmitted ? (
+            <p className="submit-feedback">✓ 送信しました</p>
+          ) : (
+            answered && (
+              <p className="dim" style={{ textAlign: "center", marginTop: 12, fontSize: "0.85rem" }}>
+                発表までは選択を変更できます
+              </p>
+            )
           )}
           <div className="btn-row">
             <button
