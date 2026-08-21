@@ -10,10 +10,6 @@
   --good: #22c55e;
   --bad: #ef4444;
   --purple: #8b5cf6;
-  --choice-0: #2d63c8;
-  --choice-1: #7c5cf0;
-  --choice-2: #d9791f;
-  --choice-3: #1f9e6d;
   font-family: "M PLUS 1p", "Hiragino Sans", "Yu Gothic", system-ui, sans-serif;
   color-scheme: dark;
 }
@@ -106,56 +102,44 @@ input[type="text"] {
   font-size: 1.05rem;
 }
 
-/* --- Choice grid (Play / Display common) --- */
+/* --- Choice list (Play / Display common) --- */
 .choice-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
+  display: flex;
+  flex-direction: column;
   gap: 12px;
   width: 100%;
 }
 
 .choice-btn {
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: var(--bg-soft);
+  border: 1px solid var(--border);
   border-radius: 14px;
-  padding: 24px 16px;
-  font-size: 1.15rem;
-  font-weight: 700;
-  color: white;
-  min-height: 96px;
+  padding: 18px 20px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text);
   text-align: left;
-  line-height: 1.3;
+  line-height: 1.4;
   opacity: 1;
-  transition: transform 0.1s ease, opacity 0.15s ease;
+  transition: transform 0.1s ease, opacity 0.15s ease, border-color 0.15s ease;
 }
 
 .choice-btn:active {
-  transform: scale(0.97);
+  transform: scale(0.98);
 }
 
 .choice-btn.dimmed {
-  opacity: 0.35;
+  opacity: 0.4;
 }
 
 .choice-btn.selected {
-  border-color: white;
-  box-shadow: 0 0 0 3px var(--accent);
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px var(--accent);
+  background: color-mix(in srgb, var(--accent) 14%, var(--bg-soft));
 }
 
 .choice-btn:disabled {
   cursor: default;
-}
-
-.choice-0 {
-  background: var(--choice-0);
-}
-.choice-1 {
-  background: var(--choice-1);
-}
-.choice-2 {
-  background: var(--choice-2);
-}
-.choice-3 {
-  background: var(--choice-3);
 }
 
 

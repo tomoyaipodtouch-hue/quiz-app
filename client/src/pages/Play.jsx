@@ -183,7 +183,7 @@ function MainContent({ state, selectedChoice, setSelectedChoice, handleSubmitAns
               {state.question.choices.map((choice, i) => (
                 <button
                   key={i}
-                  className={`choice-btn choice-${i} ${selectedChoice === i ? "selected" : ""}`}
+                  className={`choice-btn ${selectedChoice === i ? "selected" : ""}`}
                   onClick={() => setSelectedChoice(i)}
                 >
                   {CHOICE_LABELS[i]}: {choice}

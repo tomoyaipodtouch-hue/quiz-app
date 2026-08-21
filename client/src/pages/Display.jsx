@@ -72,7 +72,7 @@ export default function Display() {
           <h1 style={{ fontSize: "2.2rem", margin: "16px 0" }}>{state.question.text}</h1>
           <div className="choice-grid">
             {state.question.choices.map((c, i) => (
-              <div key={i} className={`choice-btn choice-${i}`} style={{ fontSize: "1.4rem" }}>
+              <div key={i} className="choice-btn" style={{ fontSize: "1.4rem" }}>
                 {CHOICE_LABELS[i]}: {c}
               </div>
             ))}
