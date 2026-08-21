@@ -15,12 +15,14 @@ export default function ResultBars({ choices, correctIndex, choiceCounts, myChoi
 
         return (
           <div key={i} className={`result-row ${isCorrect ? "is-correct" : ""}`}>
-            <div className="result-row-head">
-              <span className="result-row-label">
-                {CHOICE_LABELS[i]}: {choice}
+            <div className="result-row-label">
+              {CHOICE_LABELS[i]}: {choice}
+            </div>
+            <div className="result-row-meta">
+              <span className="result-row-badges">
+                {isCorrect && <span className="result-badge correct">正解</span>}
+                {isMine && <span className="result-badge mine">あなたの回答</span>}
               </span>
-              {isCorrect && <span className="result-badge correct">正解</span>}
-              {isMine && <span className="result-badge mine">あなたの回答</span>}
               <span className="result-row-pct">{pct}%</span>
             </div>
             <div className="result-bar-track">

@@ -48,6 +48,10 @@ export default function Control() {
     });
   }
 
+  function openDisplayWindow() {
+    window.open("/display", "quiz-display", "width=1280,height=800,noopener");
+  }
+
   function handleSaveQuiz(newQuiz, callback) {
     socket.emit("host:setQuiz", newQuiz, (res) => {
       callback(res);
@@ -68,10 +72,15 @@ export default function Control() {
 
   return (
     <div className="page" style={{ alignItems: "stretch" }}>
-      <ThemeToggle style={{ position: "fixed", top: 16, right: 16 }} />
-      <button className="btn-chip" style={{ position: "fixed", top: 16, right: 60 }} onClick={openSettings}>
-        ⚙ クイズ設定
-      </button>
+      <div style={{ position: "fixed", top: 16, right: 16, display: "flex", gap: 8, zIndex: 20 }}>
+        <button className="btn-chip" onClick={openDisplayWindow}>
+          ⧉ 表示画面を開く
+        </button>
+        <button className="btn-chip" onClick={openSettings}>
+          ⚙ クイズ設定
+        </button>
+        <ThemeToggle />
+      </div>
       <div className="control-grid">
         <div className="card" style={{ maxWidth: "none" }}>
           <div className="badge">{STATUS_LABEL[state.status]}</div>

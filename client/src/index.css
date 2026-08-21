@@ -313,17 +313,10 @@ input[type="text"] {
   padding-bottom: 0;
 }
 
-.result-row-head {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 0 0 8px;
-  font-weight: 600;
-}
-
 .result-row-label {
-  flex: 1;
   text-align: left;
+  font-weight: 600;
+  margin-bottom: 8px;
 }
 
 .result-row.is-correct .result-row-label {
@@ -333,6 +326,21 @@ input[type="text"] {
   text-decoration-thickness: 2px;
   text-underline-offset: 3px;
   font-weight: 800;
+}
+
+.result-row-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding-bottom: 8px;
+}
+
+.result-row-badges {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
 }
 
 .result-badge {
@@ -358,6 +366,7 @@ input[type="text"] {
   font-weight: 800;
   min-width: 3.5ch;
   text-align: right;
+  flex-shrink: 0;
 }
 
 .result-bar-track {
