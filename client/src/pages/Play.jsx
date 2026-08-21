@@ -228,7 +228,7 @@ function MainContent({ state, selectedChoice, setSelectedChoice, handleSubmitAns
         <div className="badge">
           {answered ? "回答を受け付けました" : `問題 ${state.questionIndex + 1} / ${state.quiz.totalQuestions}`}
         </div>
-        <p style={{ fontSize: "1.15rem", fontWeight: 700, margin: "4px 0 16px" }}>{state.question.text}</p>
+        <p className="question-text">{state.question.text}</p>
         <>
           <div className="choice-grid">
             {state.question.choices.map((choice, i) => (

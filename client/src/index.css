@@ -186,6 +186,13 @@ input[type="text"] {
   margin-bottom: 12px;
 }
 
+.question-text {
+  font-size: 1.5rem;
+  font-weight: 800;
+  line-height: 1.45;
+  margin: 4px 0 18px;
+}
+
 .player-list {
   list-style: none;
   padding: 0;
