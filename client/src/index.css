@@ -53,7 +53,7 @@
 html,
 body,
 #root {
-  height: 100%;
+  min-height: 100%;
   margin: 0;
 }
 
@@ -283,8 +283,10 @@ input[type="number"] {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  padding: 32px;
+  /* 中央寄せだと縦に長い内容のとき上下が均等に見切れてしまうため、
+     常に上寄せにして上端(問題文など)から順に見えるようにする */
+  justify-content: flex-start;
+  padding: 40px 32px;
   text-align: center;
 }
 
