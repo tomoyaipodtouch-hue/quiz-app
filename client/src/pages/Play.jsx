@@ -273,20 +273,16 @@ function MainContent({ state, selectedChoice, setSelectedChoice, handleSubmitAns
     return (
       <div className="card" style={{ textAlign: "center" }}>
         {me?.lastChoiceIndex == null ? (
-          <div className="title">未回答でした</div>
+          <div className="reveal-banner neutral">未回答でした</div>
         ) : me.lastCorrect ? (
-          <>
-            <div className="title" style={{ color: "var(--good)" }}>
-              正解！ 🎉
-            </div>
-            <p className="dim">+{me.lastGained} 点</p>
-          </>
+          <div className="reveal-banner correct">正解！ 🎉</div>
         ) : (
-          <div className="title" style={{ color: "var(--bad)" }}>
-            不正解...
-          </div>
+          <div className="reveal-banner incorrect">不正解...</div>
         )}
-        <p className="dim">合計スコア: {me?.score ?? 0}</p>
+        <p className="dim" style={{ marginTop: 12 }}>
+          合計スコア: {me?.score ?? 0}
+          {me?.lastCorrect ? `（+${me.lastGained}点）` : ""}
+        </p>
         {state.choiceCounts && (
           <ResultBars
             choices={state.question.choices}

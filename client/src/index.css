@@ -293,33 +293,41 @@ input[type="text"] {
 .result-list {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 18px;
   width: 100%;
   margin-top: 16px;
 }
 
 .result-row {
-  border-radius: 12px;
-  overflow: hidden;
-  background: var(--bg-soft);
-  border: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 10px;
 }
 
-.result-row.is-correct {
-  border-color: var(--good);
+.result-row:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
 }
 
 .result-row-head {
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 10px 14px;
+  padding: 0 0 8px;
   font-weight: 600;
 }
 
 .result-row-label {
   flex: 1;
   text-align: left;
+}
+
+.result-row.is-correct .result-row-label {
+  color: var(--good);
+  text-decoration: underline;
+  text-decoration-color: var(--good);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 3px;
+  font-weight: 800;
 }
 
 .result-badge {
@@ -349,6 +357,8 @@ input[type="text"] {
 
 .result-bar-track {
   height: 10px;
+  border-radius: 999px;
+  overflow: hidden;
   background: var(--track);
 }
 
@@ -359,7 +369,7 @@ input[type="text"] {
 }
 
 .result-row-votes {
-  padding: 4px 14px 10px;
+  padding: 4px 0 0;
   font-size: 0.8rem;
   color: var(--text-dim);
   text-align: right;
@@ -374,6 +384,30 @@ input[type="text"] {
   text-align: left;
   font-size: 0.95rem;
   line-height: 1.5;
+  color: var(--text-dim);
+}
+
+/* --- 正解/不正解のバナー --- */
+.reveal-banner {
+  padding: 18px 16px;
+  border-radius: 12px;
+  text-align: center;
+  font-size: 1.3rem;
+  font-weight: 800;
+}
+
+.reveal-banner.correct {
+  background: color-mix(in srgb, var(--good) 20%, var(--bg-soft));
+  color: var(--good);
+}
+
+.reveal-banner.incorrect {
+  background: color-mix(in srgb, var(--bad) 18%, var(--bg-soft));
+  color: var(--bad);
+}
+
+.reveal-banner.neutral {
+  background: var(--bg-soft);
   color: var(--text-dim);
 }
 

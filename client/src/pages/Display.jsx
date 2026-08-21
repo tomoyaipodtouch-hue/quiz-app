@@ -33,10 +33,10 @@ export default function Display() {
 
       {state.status === "lobby" && (
         <>
-          <div className="title" style={{ fontSize: "2.5rem" }}>
+          <div className="title" style={{ fontSize: "2rem" }}>
             {state.quiz.title}
           </div>
-          <p className="dim" style={{ fontSize: "1.3rem" }}>
+          <p className="dim" style={{ fontSize: "1.05rem" }}>
             スマホでQRコードを読み取って参加してください
           </p>
           {joinUrls[0] && (
@@ -45,11 +45,11 @@ export default function Display() {
             </div>
           )}
           {joinUrls.map((u) => (
-            <p key={u} style={{ fontSize: "1.1rem" }}>
+            <p key={u} style={{ fontSize: "0.95rem" }}>
               {u}
             </p>
           ))}
-          <p style={{ fontSize: "1.8rem", fontWeight: 800, marginTop: 24 }}>
+          <p style={{ fontSize: "1.4rem", fontWeight: 800, marginTop: 24 }}>
             参加者: {state.playerCount}人
           </p>
         </>
@@ -60,15 +60,15 @@ export default function Display() {
           <div className="badge">
             問題 {state.questionIndex + 1} / {state.quiz.totalQuestions} · 回答受付中
           </div>
-          <h1 style={{ fontSize: "2.2rem", margin: "16px 0" }}>{state.question.text}</h1>
+          <h1 style={{ fontSize: "1.7rem", margin: "16px 0" }}>{state.question.text}</h1>
           <div className="choice-grid">
             {state.question.choices.map((c, i) => (
-              <div key={i} className="choice-btn" style={{ fontSize: "1.4rem" }}>
+              <div key={i} className="choice-btn" style={{ fontSize: "1.1rem" }}>
                 {CHOICE_LABELS[i]}: {c}
               </div>
             ))}
           </div>
-          <p className="dim" style={{ marginTop: 16, fontSize: "1.2rem" }}>
+          <p className="dim" style={{ marginTop: 16, fontSize: "1rem" }}>
             回答済み: {state.answeredCount} / {state.playerCount}
           </p>
         </div>
@@ -76,7 +76,7 @@ export default function Display() {
 
       {state.status === "reveal" && state.question && (
         <div style={{ width: "100%", maxWidth: 1100 }}>
-          <h1 style={{ fontSize: "2.2rem", margin: "16px 0", textAlign: "center" }}>{state.question.text}</h1>
+          <h1 style={{ fontSize: "1.7rem", margin: "16px 0", textAlign: "center" }}>{state.question.text}</h1>
           {state.choiceCounts && (
             <div className="reveal-split">
               <div>
@@ -97,7 +97,7 @@ export default function Display() {
 
       {(state.status === "leaderboard" || state.status === "ended") && state.leaderboard && (
         <div style={{ width: "100%", maxWidth: 640 }}>
-          <div className="title" style={{ fontSize: "2rem", textAlign: "center" }}>
+          <div className="title" style={{ fontSize: "1.6rem", textAlign: "center" }}>
             {state.status === "ended" ? "最終結果" : "現在のランキング"}
           </div>
           <div style={{ display: "flex", flexDirection: "column", gap: 10, marginTop: 20 }}>
