@@ -46,7 +46,7 @@ export default function Display() {
             </p>
             {joinUrls[0] && (
               <div className="qr-box" style={{ margin: "24px 0" }}>
-                <QRCodeSVG value={joinUrls[0]} size={220} />
+                <QRCodeSVG value={joinUrls[0]} size={340} />
               </div>
             )}
             {joinUrls.map((u) => (
@@ -55,11 +55,11 @@ export default function Display() {
               </p>
             ))}
             {state.joinCode && (
-              <p style={{ marginTop: 8 }}>
-                <span className="dim" style={{ fontSize: "0.95rem" }}>
+              <p style={{ marginTop: 12 }}>
+                <span className="dim" style={{ fontSize: "1.2rem" }}>
                   セッションID:{" "}
                 </span>
-                <span style={{ fontWeight: 800, fontSize: "1.3rem", letterSpacing: "0.15em" }}>
+                <span style={{ fontWeight: 800, fontSize: "2.2rem", letterSpacing: "0.15em" }}>
                   {state.joinCode}
                 </span>
               </p>
