@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { socket } from "../socket.js";
 import { useJoinUrl } from "../useJoinUrl.js";
 import HistoryList from "../HistoryList.jsx";
-import ThemeToggle from "../ThemeToggle.jsx";
+import ThemeToggle, { SunIcon, MoonIcon } from "../ThemeToggle.jsx";
 import QuizSettings from "../QuizSettings.jsx";
 
 const STATUS_LABEL = {
@@ -78,6 +78,17 @@ export default function Control() {
         </button>
         <button className="btn-chip" onClick={openSettings}>
           ⚙ クイズ設定
+        </button>
+        <button
+          className="btn-chip"
+          type="button"
+          style={{ display: "inline-flex", alignItems: "center", gap: 4 }}
+          title="投影している表示画面のテーマを切り替え"
+          onClick={() =>
+            socket.emit("host:setDisplayTheme", { theme: state.displayTheme === "dark" ? "light" : "dark" })
+          }
+        >
+          {state.displayTheme === "dark" ? <SunIcon /> : <MoonIcon />} 投影画面
         </button>
         <ThemeToggle />
       </div>
@@ -191,8 +202,18 @@ export default function Control() {
         </div>
 
         <div className="card">
-          <div className="title" style={{ fontSize: "1.1rem" }}>
-            参加者 ({state.players.length})
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8 }}>
+            <div className="title" style={{ fontSize: "1.1rem", margin: 0 }}>
+              参加者 ({state.players.length})
+            </div>
+            <button
+              className={`btn-chip ${state.showParticipantsOnDisplay ? "active" : ""}`}
+              onClick={() =>
+                socket.emit("host:showParticipantsOnDisplay", { show: !state.showParticipantsOnDisplay })
+              }
+            >
+              表示画面に{state.showParticipantsOnDisplay ? "表示中" : "非表示"}
+            </button>
           </div>
           <ul className="player-list">
             {state.players.map((p) => (

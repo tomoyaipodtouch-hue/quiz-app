@@ -2,11 +2,12 @@ const CHOICE_LABELS = ["A", "B", "C", "D"];
 const CHART_COLORS = ["var(--chart-a)", "var(--chart-b)", "var(--chart-c)", "var(--chart-d)"];
 
 // 選択肢ごとの得票率バー。参加者画面・表示画面の両方で使う。
-export default function ResultBars({ choices, correctIndex, choiceCounts, myChoiceIndex }) {
+// compact: true にすると、表示画面(投影用)で長文でも1画面に収まりやすいよう文字や余白を詰める
+export default function ResultBars({ choices, correctIndex, choiceCounts, myChoiceIndex, compact }) {
   const total = choiceCounts.reduce((sum, c) => sum + c, 0);
 
   return (
-    <div className="result-list">
+    <div className={`result-list ${compact ? "compact" : ""}`}>
       {choices.map((choice, i) => {
         const count = choiceCounts[i] ?? 0;
         const pct = total > 0 ? Math.round((count / total) * 100) : 0;

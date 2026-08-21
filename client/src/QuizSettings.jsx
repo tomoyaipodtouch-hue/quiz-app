@@ -9,6 +9,7 @@ function emptyQuestion() {
 
 export default function QuizSettings({ initialQuiz, onSave, onCancel }) {
   const [title, setTitle] = useState(initialQuiz.title);
+  const [pointsPerCorrect, setPointsPerCorrect] = useState(String(initialQuiz.pointsPerCorrect ?? 1000));
   const [questions, setQuestions] = useState(
     initialQuiz.questions.map((q) => ({ ...q, choices: [...q.choices], explanation: q.explanation ?? "" }))
   );
@@ -75,6 +76,10 @@ export default function QuizSettings({ initialQuiz, onSave, onCancel }) {
   function handleSave() {
     const validationErrors = [];
     if (!title.trim()) validationErrors.push("クイズのタイトルを入力してください");
+    const points = Number(pointsPerCorrect);
+    if (!Number.isInteger(points) || points <= 0) {
+      validationErrors.push("正解時のスコアは1以上の整数で入力してください");
+    }
     questions.forEach((q, i) => {
       if (!q.text.trim()) validationErrors.push(`問題${i + 1}: 問題文が空です`);
       if (q.choices.some((c) => !c.trim())) validationErrors.push(`問題${i + 1}: 選択肢が4つ揃っていません`);
@@ -90,6 +95,7 @@ export default function QuizSettings({ initialQuiz, onSave, onCancel }) {
     onSave(
       {
         title: title.trim(),
+        pointsPerCorrect: points,
         questions: questions.map((q) => ({
           text: q.text.trim(),
           choices: q.choices.map((c) => c.trim()),
@@ -125,6 +131,19 @@ export default function QuizSettings({ initialQuiz, onSave, onCancel }) {
           クイズのタイトル
         </label>
         <input type="text" value={title} onChange={(e) => setTitle(e.target.value)} maxLength={60} />
+      </div>
+
+      <div style={{ marginTop: 16 }}>
+        <label className="dim" style={{ fontSize: "0.85rem" }}>
+          正解時のスコア(1問あたり)
+        </label>
+        <input
+          type="number"
+          min={1}
+          step={1}
+          value={pointsPerCorrect}
+          onChange={(e) => setPointsPerCorrect(e.target.value)}
+        />
       </div>
 
       <div className="btn-row">

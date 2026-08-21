@@ -1,21 +1,36 @@
 import { randomUUID } from "node:crypto";
 import { quiz as defaultQuiz } from "./quizData.js";
 
-const POINTS_PER_CORRECT = 1000;
+const DEFAULT_POINTS_PER_CORRECT = 1000;
 
 // ゲーム全体の状態をここで一元管理する。
 // status: 'lobby' | 'question' | 'reveal' | 'leaderboard' | 'ended'
 const state = {
   status: "lobby",
-  quiz: structuredClone(defaultQuiz), // クイズ設定画面から差し替え可能
+  quiz: {
+    pointsPerCorrect: DEFAULT_POINTS_PER_CORRECT,
+    ...structuredClone(defaultQuiz),
+  }, // クイズ設定画面から差し替え可能
   currentQuestionIndex: -1,
   players: new Map(), // token -> { token, socketId, name, score, answered, lastCorrect, lastGained }
   history: [], // 出題済みの問題の結果(集計済み)。revealAnswer() のタイミングで積む
   gameEpoch: randomUUID(), // リセットのたびに発行し直す世代ID。古い世代のブラウザは自動再参加させない
+  showParticipantsOnDisplay: true, // 表示画面(投影用)に参加者名を出すかどうか。出題者の設定で切り替え
+  displayTheme: "dark", // 表示画面(投影用)のテーマ。プロジェクター側を直接操作しないので出題者が遠隔で切り替える
 };
 
 export function getGameEpoch() {
   return state.gameEpoch;
+}
+
+export function setShowParticipantsOnDisplay(show) {
+  state.showParticipantsOnDisplay = !!show;
+  notify();
+}
+
+export function setDisplayTheme(theme) {
+  state.displayTheme = theme === "light" ? "light" : "dark";
+  notify();
 }
 
 let onChange = () => {};
@@ -57,8 +72,14 @@ export function setQuiz(newQuiz) {
     }
   }
 
+  const pointsPerCorrect =
+    Number.isInteger(newQuiz.pointsPerCorrect) && newQuiz.pointsPerCorrect > 0
+      ? newQuiz.pointsPerCorrect
+      : DEFAULT_POINTS_PER_CORRECT;
+
   state.quiz = {
     title: newQuiz.title.trim() || "クイズ",
+    pointsPerCorrect,
     questions: newQuiz.questions.map((q) => ({
       text: q.text.trim(),
       choices: q.choices.map((c) => c.trim()),
@@ -116,7 +137,7 @@ export function submitAnswer(token, choiceIndex) {
   if (!q) return;
 
   const correct = choiceIndex === q.correctIndex;
-  const gained = correct ? POINTS_PER_CORRECT : 0;
+  const gained = correct ? state.quiz.pointsPerCorrect : 0;
 
   // 既に回答済みの場合、前回分の得点を差し引いてから今回の分を加える
   player.score += gained - (player.lastGained ?? 0);
@@ -257,6 +278,8 @@ export function getHostView() {
     })),
     leaderboard: sortedLeaderboard(),
     history: state.history,
+    showParticipantsOnDisplay: state.showParticipantsOnDisplay,
+    displayTheme: state.displayTheme,
   };
 }
 
@@ -293,10 +316,14 @@ export function getDisplayView() {
         }
       : null,
     playerCount: playersArray().length,
+    players: state.showParticipantsOnDisplay
+      ? playersArray().map((p) => ({ token: p.token, name: p.name }))
+      : null,
     answeredCount,
     choiceCounts,
     leaderboard: state.status === "leaderboard" || state.status === "ended" ? sortedLeaderboard() : null,
     history: state.history,
+    theme: state.displayTheme,
   };
 }
 

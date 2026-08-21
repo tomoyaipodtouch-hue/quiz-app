@@ -4,7 +4,6 @@ import { socket } from "../socket.js";
 import { useJoinUrl } from "../useJoinUrl.js";
 import ResultBars from "../ResultBars.jsx";
 import PieChart from "../PieChart.jsx";
-import ThemeToggle from "../ThemeToggle.jsx";
 
 const CHOICE_LABELS = ["A", "B", "C", "D"];
 
@@ -19,6 +18,13 @@ export default function Display() {
     return () => socket.off("state", onState);
   }, []);
 
+  // 表示画面のテーマは投影しているPCを直接操作しないので、Control側からの遠隔操作に従う
+  useEffect(() => {
+    if (state?.theme) {
+      document.documentElement.dataset.theme = state.theme;
+    }
+  }, [state?.theme]);
+
   if (!state) {
     return (
       <div className="display-fullscreen">
@@ -29,30 +35,38 @@ export default function Display() {
 
   return (
     <div className="display-fullscreen">
-      <ThemeToggle style={{ position: "fixed", top: 16, right: 16 }} />
-
       {state.status === "lobby" && (
-        <>
-          <div className="title" style={{ fontSize: "2rem" }}>
-            {state.quiz.title}
-          </div>
-          <p className="dim" style={{ fontSize: "1.05rem" }}>
-            スマホでQRコードを読み取って参加してください
-          </p>
-          {joinUrls[0] && (
-            <div className="qr-box" style={{ margin: "24px 0" }}>
-              <QRCodeSVG value={joinUrls[0]} size={220} />
+        <div className="lobby-split">
+          <div className="lobby-split-main">
+            <div className="title" style={{ fontSize: "2rem" }}>
+              {state.quiz.title}
             </div>
-          )}
-          {joinUrls.map((u) => (
-            <p key={u} style={{ fontSize: "0.95rem" }}>
-              {u}
+            <p className="dim" style={{ fontSize: "1.05rem" }}>
+              スマホでQRコードを読み取って参加してください
             </p>
-          ))}
-          <p style={{ fontSize: "1.4rem", fontWeight: 800, marginTop: 24 }}>
-            参加者: {state.playerCount}人
-          </p>
-        </>
+            {joinUrls[0] && (
+              <div className="qr-box" style={{ margin: "24px 0" }}>
+                <QRCodeSVG value={joinUrls[0]} size={220} />
+              </div>
+            )}
+            {joinUrls.map((u) => (
+              <p key={u} style={{ fontSize: "0.95rem" }}>
+                {u}
+              </p>
+            ))}
+          </div>
+          <div className="lobby-split-side">
+            <p style={{ fontSize: "1.4rem", fontWeight: 800 }}>参加者: {state.playerCount}人</p>
+            {state.players && (
+              <ul className="lobby-participant-list">
+                {state.players.map((p) => (
+                  <li key={p.token}>{p.name}</li>
+                ))}
+                {state.players.length === 0 && <li className="dim">まだ誰も参加していません</li>}
+              </ul>
+            )}
+          </div>
+        </div>
       )}
 
       {state.status === "question" && state.question && (
@@ -76,7 +90,9 @@ export default function Display() {
 
       {state.status === "reveal" && state.question && (
         <div style={{ width: "100%", maxWidth: 1100 }}>
-          <h1 style={{ fontSize: "1.7rem", margin: "16px 0", textAlign: "center" }}>{state.question.text}</h1>
+          <h1 style={{ fontSize: "1.3rem", margin: "8px 0 12px", textAlign: "center" }}>
+            {state.question.text}
+          </h1>
           {state.choiceCounts && (
             <div className="reveal-split">
               <div>
@@ -84,9 +100,10 @@ export default function Display() {
                   choices={state.question.choices}
                   correctIndex={state.question.correctIndex}
                   choiceCounts={state.choiceCounts}
+                  compact
                 />
                 {state.question.explanation && (
-                  <div className="explanation-box">{state.question.explanation}</div>
+                  <div className="explanation-box compact">{state.question.explanation}</div>
                 )}
               </div>
               <PieChart choiceCounts={state.choiceCounts} />

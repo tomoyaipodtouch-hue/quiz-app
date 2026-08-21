@@ -24,6 +24,8 @@ import {
   getQuiz,
   setQuiz,
   getQuizMeta,
+  setShowParticipantsOnDisplay,
+  setDisplayTheme,
 } from "./gameState.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -110,6 +112,8 @@ io.on("connection", (socket) => {
   socket.on("host:leaderboard", () => showLeaderboard());
   socket.on("host:reset", () => resetGame());
   socket.on("host:kick", ({ token }) => kickPlayer(token));
+  socket.on("host:showParticipantsOnDisplay", ({ show }) => setShowParticipantsOnDisplay(show));
+  socket.on("host:setDisplayTheme", ({ theme }) => setDisplayTheme(theme));
 
   // --- クイズ設定 ---
   socket.on("host:getQuiz", (cb) => {
