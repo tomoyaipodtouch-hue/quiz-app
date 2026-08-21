@@ -54,6 +54,16 @@ export default function Display() {
                 {u}
               </p>
             ))}
+            {state.joinCode && (
+              <p style={{ marginTop: 8 }}>
+                <span className="dim" style={{ fontSize: "0.95rem" }}>
+                  セッションID:{" "}
+                </span>
+                <span style={{ fontWeight: 800, fontSize: "1.3rem", letterSpacing: "0.15em" }}>
+                  {state.joinCode}
+                </span>
+              </p>
+            )}
           </div>
           <div className="lobby-split-side">
             <p style={{ fontSize: "1.4rem", fontWeight: 800 }}>参加者: {state.playerCount}人</p>

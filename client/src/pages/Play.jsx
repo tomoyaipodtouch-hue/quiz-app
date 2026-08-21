@@ -24,6 +24,9 @@ export default function Play() {
   const [selectedChoice, setSelectedChoice] = useState(null);
   const [justSubmitted, setJustSubmitted] = useState(false);
   const [quizTitle, setQuizTitle] = useState("クイズ");
+  const [joinCodeRequired, setJoinCodeRequired] = useState(false);
+  const [joinCode, setJoinCode] = useState("");
+  const [joinError, setJoinError] = useState("");
   const token = getOrCreateToken();
   const joinedRef = useRef(joined);
   joinedRef.current = joined;
@@ -45,8 +48,9 @@ export default function Play() {
     // 今の世代IDを問い合わせて、保存されている名前が今のゲームのものであれば
     // 自動で再参加する(リロード/再接続対策)。世代が古ければ(＝リセット後)
     // 参加登録の画面からやり直させる
-    function onEpoch({ gameEpoch, quizTitle: title }) {
+    function onEpoch({ gameEpoch, quizTitle: title, joinCodeEnabled }) {
       if (title) setQuizTitle(title);
+      setJoinCodeRequired(!!joinCodeEnabled);
       const savedEpoch = localStorage.getItem("quiz_game_epoch");
       const savedName = localStorage.getItem("quiz_player_name");
       if (savedName && savedEpoch === gameEpoch) {
@@ -84,9 +88,16 @@ export default function Play() {
     e.preventDefault();
     const trimmed = name.trim();
     if (!trimmed) return;
-    localStorage.setItem("quiz_player_name", trimmed);
-    socket.emit("player:join", { token, name: trimmed });
-    setJoined(true);
+    if (joinCodeRequired && joinCode.length !== 6) return;
+    socket.emit("player:join", { token, name: trimmed, code: joinCode }, (res) => {
+      if (res?.ok) {
+        localStorage.setItem("quiz_player_name", trimmed);
+        setJoinError("");
+        setJoined(true);
+      } else {
+        setJoinError(res?.error || "参加できませんでした");
+      }
+    });
   }
 
   function handleSubmitAnswer() {
@@ -128,8 +139,32 @@ export default function Play() {
               maxLength={20}
               autoFocus
             />
+            {joinCodeRequired && (
+              <div style={{ marginTop: 12 }}>
+                <label className="dim" style={{ fontSize: "0.85rem" }}>
+                  セッションID(6桁)
+                </label>
+                <input
+                  type="text"
+                  inputMode="numeric"
+                  pattern="[0-9]*"
+                  maxLength={6}
+                  value={joinCode}
+                  onChange={(e) => setJoinCode(e.target.value.replace(/\D/g, ""))}
+                  placeholder="123456"
+                />
+              </div>
+            )}
+            {joinError && (
+              <p style={{ color: "var(--bad)", fontSize: "0.85rem", marginTop: 8 }}>{joinError}</p>
+            )}
             <div className="btn-row">
-              <button className="btn" type="submit" style={{ flex: 1 }}>
+              <button
+                className="btn"
+                type="submit"
+                style={{ flex: 1 }}
+                disabled={joinCodeRequired && joinCode.length !== 6}
+              >
                 参加する
               </button>
             </div>

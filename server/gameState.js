@@ -21,28 +21,33 @@ const state = {
   gameEpoch: randomUUID(), // リセットのたびに発行し直す世代ID。古い世代のブラウザは自動再参加させない
   showParticipantsOnDisplay: true, // 表示画面(投影用)に参加者名を出すかどうか。出題者の設定で切り替え
   displayTheme: "dark", // 表示画面(投影用)のテーマ。プロジェクター側を直接操作しないので出題者が遠隔で切り替える
-  controlPin: generatePin(), // 操作画面(/control)に入るための6桁PIN。サーバー起動時に発行
-  controlPinEnabled: false, // PINでのアクセス制限を使うかどうか。Control画面からオン/オフ可能
+  joinCode: generatePin(), // 参加(/play)時に入力させる6桁のセッションID。サーバー起動時に発行
+  joinCodeEnabled: false, // セッションIDでの参加制限を使うかどうか。Control画面からオン/オフ可能
 };
 
 export function getGameEpoch() {
   return state.gameEpoch;
 }
 
-// 制限がオフの間は誰でも/controlに入れる(今まで通り)。オンのときだけPINを照合する
-export function verifyControlPin(pin) {
-  if (!state.controlPinEnabled) return true;
-  return typeof pin === "string" && pin === state.controlPin;
+export function isKnownPlayer(token) {
+  return state.players.has(token);
 }
 
-export function regenerateControlPin() {
-  state.controlPin = generatePin();
+// 制限がオフの間は誰でも参加できる(今まで通り)。オンのときだけコードを照合する。
+// 既に参加済みのトークン(名前変更・再接続)はコード不要
+export function verifyJoinCode(code) {
+  if (!state.joinCodeEnabled) return true;
+  return typeof code === "string" && code === state.joinCode;
+}
+
+export function regenerateJoinCode() {
+  state.joinCode = generatePin();
   notify();
-  return state.controlPin;
+  return state.joinCode;
 }
 
-export function setControlPinEnabled(enabled) {
-  state.controlPinEnabled = !!enabled;
+export function setJoinCodeEnabled(enabled) {
+  state.joinCodeEnabled = !!enabled;
   notify();
 }
 
@@ -303,8 +308,8 @@ export function getHostView() {
     history: state.history,
     showParticipantsOnDisplay: state.showParticipantsOnDisplay,
     displayTheme: state.displayTheme,
-    controlPin: state.controlPin,
-    controlPinEnabled: state.controlPinEnabled,
+    joinCode: state.joinCode,
+    joinCodeEnabled: state.joinCodeEnabled,
   };
 }
 
@@ -349,6 +354,7 @@ export function getDisplayView() {
     leaderboard: state.status === "leaderboard" || state.status === "ended" ? sortedLeaderboard() : null,
     history: state.history,
     theme: state.displayTheme,
+    joinCode: state.joinCodeEnabled ? state.joinCode : null,
   };
 }
 
