@@ -237,14 +237,14 @@ input[type="text"] {
   background: var(--bg-soft);
   border: 1px solid var(--border);
   border-radius: 12px;
-  padding: 14px 18px;
-  font-size: 1.1rem;
-  font-weight: 600;
+  padding: 12px 16px;
+  font-size: 0.95rem;
+  font-weight: 500;
 }
 
 .leaderboard-rank {
-  font-size: 1.4rem;
-  font-weight: 800;
+  font-size: 1.1rem;
+  font-weight: 700;
   color: var(--accent);
   width: 2ch;
 }
