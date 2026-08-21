@@ -599,15 +599,13 @@ input[type="text"] {
 }
 
 .app-topbar-icon {
-  width: 32px;
-  height: 32px;
-  border-radius: 9px;
-  background: var(--accent);
+  width: 28px;
+  height: 28px;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  color: white;
+  color: var(--accent);
 }
 
 .app-topbar-title {
