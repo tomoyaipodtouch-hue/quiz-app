@@ -17,14 +17,87 @@ export default function Control() {
   const [state, setState] = useState(null);
   const [showHistory, setShowHistory] = useState(false);
   const [quizDraft, setQuizDraft] = useState(null);
+  const [authed, setAuthed] = useState(false);
+  const [authError, setAuthError] = useState(false);
+  const [pinInput, setPinInput] = useState("");
   const joinUrls = useJoinUrl();
 
   useEffect(() => {
-    socket.emit("control:hello");
     const onState = (s) => setState(s);
     socket.on("state", onState);
-    return () => socket.off("state", onState);
+
+    function auth(pin) {
+      socket.emit("control:hello", pin, (res) => {
+        if (res?.ok) {
+          setAuthed(true);
+          setAuthError(false);
+          if (pin) localStorage.setItem("quiz_control_pin", pin);
+        } else {
+          setAuthed(false);
+          setAuthError(true);
+          localStorage.removeItem("quiz_control_pin");
+        }
+      });
+    }
+
+    // 再接続のたびに(保存済みPIN、または制限オフなら空文字で)入り直す
+    function onConnect() {
+      auth(localStorage.getItem("quiz_control_pin") || "");
+    }
+    socket.on("connect", onConnect);
+    if (socket.connected) onConnect();
+
+    return () => {
+      socket.off("state", onState);
+      socket.off("connect", onConnect);
+    };
   }, []);
+
+  function handlePinSubmit(e) {
+    e.preventDefault();
+    socket.emit("control:hello", pinInput, (res) => {
+      if (res?.ok) {
+        setAuthed(true);
+        setAuthError(false);
+        localStorage.setItem("quiz_control_pin", pinInput);
+      } else {
+        setAuthError(true);
+      }
+    });
+  }
+
+  if (!authed) {
+    return (
+      <div className="page" style={{ justifyContent: "center" }}>
+        <form className="card" onSubmit={handlePinSubmit}>
+          <div className="title">操作画面PIN</div>
+          <p className="dim">
+            アクセス制限が有効です。PC側の操作画面に表示されている6桁のPINを入力してください。
+          </p>
+          <input
+            type="text"
+            inputMode="numeric"
+            pattern="[0-9]*"
+            maxLength={6}
+            value={pinInput}
+            onChange={(e) => setPinInput(e.target.value.replace(/\D/g, ""))}
+            placeholder="123456"
+            autoFocus
+          />
+          {authError && (
+            <p style={{ color: "var(--bad)", fontSize: "0.85rem", marginTop: 8 }}>
+              PINが違います
+            </p>
+          )}
+          <div className="btn-row">
+            <button className="btn" type="submit" style={{ flex: 1 }} disabled={pinInput.length !== 6}>
+              入る
+            </button>
+          </div>
+        </form>
+      </div>
+    );
+  }
 
   if (!state) {
     return (
@@ -96,6 +169,30 @@ export default function Control() {
         <div className="card" style={{ maxWidth: "none" }}>
           <div className="badge">{STATUS_LABEL[state.status]}</div>
           <div className="title">{state.quiz.title}</div>
+
+          <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap", marginBottom: 16 }}>
+            <button
+              className={`btn-chip ${state.controlPinEnabled ? "active" : ""}`}
+              onClick={() =>
+                socket.emit("host:setControlPinEnabled", { enabled: !state.controlPinEnabled })
+              }
+            >
+              🔒 操作画面のアクセス制限: {state.controlPinEnabled ? "オン" : "オフ"}
+            </button>
+            {state.controlPinEnabled && (
+              <>
+                <span style={{ fontWeight: 800, fontSize: "1.15rem", letterSpacing: "0.15em" }}>
+                  {state.controlPin}
+                </span>
+                <button
+                  className="btn-chip"
+                  onClick={() => socket.emit("host:regenerateControlPin")}
+                >
+                  PINを再発行
+                </button>
+              </>
+            )}
+          </div>
 
           {state.status === "lobby" && (
             <>

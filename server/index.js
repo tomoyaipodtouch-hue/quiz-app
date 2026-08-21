@@ -26,6 +26,9 @@ import {
   getQuizMeta,
   setShowParticipantsOnDisplay,
   setDisplayTheme,
+  verifyControlPin,
+  regenerateControlPin,
+  setControlPinEnabled,
 } from "./gameState.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -72,10 +75,21 @@ function broadcastAll() {
 
 setOnChange(broadcastAll);
 
+function isAuthedHost(socket) {
+  return socketRole.get(socket.id) === "host";
+}
+
 io.on("connection", (socket) => {
-  socket.on("control:hello", () => {
+  // /control は6桁PINで保護する。認証できたソケットだけを "control" ルームに入れ、
+  // host:* イベントも下のガードで未認証ソケットからは実行できないようにする
+  socket.on("control:hello", (pin, cb) => {
+    if (!verifyControlPin(pin)) {
+      cb?.({ ok: false });
+      return;
+    }
     socketRole.set(socket.id, "host");
     socket.join("control");
+    cb?.({ ok: true });
     socket.emit("state", getHostView());
   });
 
@@ -106,20 +120,40 @@ io.on("connection", (socket) => {
   });
 
   // --- host controls ---
-  socket.on("host:start", () => startQuiz());
-  socket.on("host:next", () => nextQuestion());
-  socket.on("host:reveal", () => revealAnswer());
-  socket.on("host:leaderboard", () => showLeaderboard());
-  socket.on("host:reset", () => resetGame());
-  socket.on("host:kick", ({ token }) => kickPlayer(token));
-  socket.on("host:showParticipantsOnDisplay", ({ show }) => setShowParticipantsOnDisplay(show));
-  socket.on("host:setDisplayTheme", ({ theme }) => setDisplayTheme(theme));
+  // 未認証(PIN未通過)のソケットからは一切操作できないようにガードする
+  socket.on("host:start", () => isAuthedHost(socket) && startQuiz());
+  socket.on("host:next", () => isAuthedHost(socket) && nextQuestion());
+  socket.on("host:reveal", () => isAuthedHost(socket) && revealAnswer());
+  socket.on("host:leaderboard", () => isAuthedHost(socket) && showLeaderboard());
+  socket.on("host:reset", () => isAuthedHost(socket) && resetGame());
+  socket.on("host:kick", ({ token }) => isAuthedHost(socket) && kickPlayer(token));
+  socket.on(
+    "host:showParticipantsOnDisplay",
+    ({ show }) => isAuthedHost(socket) && setShowParticipantsOnDisplay(show)
+  );
+  socket.on("host:setDisplayTheme", ({ theme }) => isAuthedHost(socket) && setDisplayTheme(theme));
+  socket.on("host:setControlPinEnabled", ({ enabled }) => isAuthedHost(socket) && setControlPinEnabled(enabled));
+  socket.on("host:regenerateControlPin", (cb) => {
+    if (!isAuthedHost(socket)) {
+      cb?.({ ok: false });
+      return;
+    }
+    cb?.({ ok: true, pin: regenerateControlPin() });
+  });
 
   // --- クイズ設定 ---
   socket.on("host:getQuiz", (cb) => {
+    if (!isAuthedHost(socket)) {
+      cb?.({ ok: false });
+      return;
+    }
     cb?.({ ok: true, quiz: getQuiz() });
   });
   socket.on("host:setQuiz", (newQuiz, cb) => {
+    if (!isAuthedHost(socket)) {
+      cb?.({ ok: false });
+      return;
+    }
     try {
       setQuiz(newQuiz);
       cb?.({ ok: true });

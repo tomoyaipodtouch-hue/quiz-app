@@ -3,6 +3,10 @@ import { quiz as defaultQuiz } from "./quizData.js";
 
 const DEFAULT_POINTS_PER_CORRECT = 1000;
 
+function generatePin() {
+  return String(Math.floor(100000 + Math.random() * 900000));
+}
+
 // ゲーム全体の状態をここで一元管理する。
 // status: 'lobby' | 'question' | 'reveal' | 'leaderboard' | 'ended'
 const state = {
@@ -17,10 +21,29 @@ const state = {
   gameEpoch: randomUUID(), // リセットのたびに発行し直す世代ID。古い世代のブラウザは自動再参加させない
   showParticipantsOnDisplay: true, // 表示画面(投影用)に参加者名を出すかどうか。出題者の設定で切り替え
   displayTheme: "dark", // 表示画面(投影用)のテーマ。プロジェクター側を直接操作しないので出題者が遠隔で切り替える
+  controlPin: generatePin(), // 操作画面(/control)に入るための6桁PIN。サーバー起動時に発行
+  controlPinEnabled: false, // PINでのアクセス制限を使うかどうか。Control画面からオン/オフ可能
 };
 
 export function getGameEpoch() {
   return state.gameEpoch;
+}
+
+// 制限がオフの間は誰でも/controlに入れる(今まで通り)。オンのときだけPINを照合する
+export function verifyControlPin(pin) {
+  if (!state.controlPinEnabled) return true;
+  return typeof pin === "string" && pin === state.controlPin;
+}
+
+export function regenerateControlPin() {
+  state.controlPin = generatePin();
+  notify();
+  return state.controlPin;
+}
+
+export function setControlPinEnabled(enabled) {
+  state.controlPinEnabled = !!enabled;
+  notify();
 }
 
 export function setShowParticipantsOnDisplay(show) {
@@ -280,6 +303,8 @@ export function getHostView() {
     history: state.history,
     showParticipantsOnDisplay: state.showParticipantsOnDisplay,
     displayTheme: state.displayTheme,
+    controlPin: state.controlPin,
+    controlPinEnabled: state.controlPinEnabled,
   };
 }
 
