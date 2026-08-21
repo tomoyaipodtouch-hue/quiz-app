@@ -90,9 +90,7 @@ export default function Display() {
 
       {state.status === "reveal" && state.question && (
         <div style={{ width: "100%", maxWidth: 1100 }}>
-          <h1 style={{ fontSize: "1.3rem", margin: "8px 0 12px", textAlign: "center" }}>
-            {state.question.text}
-          </h1>
+          <h1 style={{ fontSize: "1.7rem", margin: "16px 0", textAlign: "center" }}>{state.question.text}</h1>
           {state.choiceCounts && (
             <div className="reveal-split">
               <div>
@@ -100,10 +98,9 @@ export default function Display() {
                   choices={state.question.choices}
                   correctIndex={state.question.correctIndex}
                   choiceCounts={state.choiceCounts}
-                  compact
                 />
                 {state.question.explanation && (
-                  <div className="explanation-box compact">{state.question.explanation}</div>
+                  <div className="explanation-box">{state.question.explanation}</div>
                 )}
               </div>
               <PieChart choiceCounts={state.choiceCounts} />
