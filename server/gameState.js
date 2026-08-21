@@ -1,5 +1,5 @@
 import { randomUUID } from "node:crypto";
-import { quiz } from "./quizData.js";
+import { quiz as defaultQuiz } from "./quizData.js";
 
 const POINTS_PER_CORRECT = 1000;
 
@@ -7,6 +7,7 @@ const POINTS_PER_CORRECT = 1000;
 // status: 'lobby' | 'question' | 'reveal' | 'leaderboard' | 'ended'
 const state = {
   status: "lobby",
+  quiz: structuredClone(defaultQuiz), // クイズ設定画面から差し替え可能
   currentQuestionIndex: -1,
   players: new Map(), // token -> { token, socketId, name, score, answered, lastCorrect, lastGained }
   history: [], // 出題済みの問題の結果(集計済み)。revealAnswer() のタイミングで積む
@@ -28,7 +29,44 @@ function notify() {
 }
 
 function currentQuestion() {
-  return quiz.questions[state.currentQuestionIndex] ?? null;
+  return state.quiz.questions[state.currentQuestionIndex] ?? null;
+}
+
+export function getQuiz() {
+  return state.quiz;
+}
+
+// クイズ設定画面(またはCSVインポート)からの差し替え。進行中のゲームは意味を失うので
+// リセットも合わせて行う。
+export function setQuiz(newQuiz) {
+  if (!newQuiz || typeof newQuiz.title !== "string" || !Array.isArray(newQuiz.questions)) {
+    throw new Error("クイズの形式が正しくありません");
+  }
+  if (newQuiz.questions.length === 0) {
+    throw new Error("問題が1つもありません");
+  }
+  for (const q of newQuiz.questions) {
+    if (typeof q.text !== "string" || !q.text.trim()) {
+      throw new Error("問題文が空の項目があります");
+    }
+    if (!Array.isArray(q.choices) || q.choices.length !== 4 || q.choices.some((c) => typeof c !== "string" || !c.trim())) {
+      throw new Error("選択肢は4つとも入力してください");
+    }
+    if (!Number.isInteger(q.correctIndex) || q.correctIndex < 0 || q.correctIndex > 3) {
+      throw new Error("正解の指定が正しくありません");
+    }
+  }
+
+  state.quiz = {
+    title: newQuiz.title.trim() || "クイズ",
+    questions: newQuiz.questions.map((q) => ({
+      text: q.text.trim(),
+      choices: q.choices.map((c) => c.trim()),
+      correctIndex: q.correctIndex,
+      explanation: typeof q.explanation === "string" && q.explanation.trim() ? q.explanation.trim() : null,
+    })),
+  };
+  resetGame();
 }
 
 export function joinPlayer(token, name, socketId) {
@@ -105,9 +143,9 @@ export function startQuiz() {
 
 export function nextQuestion() {
   const nextIndex = state.currentQuestionIndex + 1;
-  if (nextIndex >= quiz.questions.length) {
+  if (nextIndex >= state.quiz.questions.length) {
     state.status = "ended";
-    state.currentQuestionIndex = quiz.questions.length - 1;
+    state.currentQuestionIndex = state.quiz.questions.length - 1;
     notify();
     return;
   }
@@ -190,7 +228,7 @@ function sortedLeaderboard() {
 }
 
 export function getQuizMeta() {
-  return { title: quiz.title, totalQuestions: quiz.questions.length };
+  return { title: state.quiz.title, totalQuestions: state.quiz.questions.length };
 }
 
 // 出題者(操作画面)向け：正解や全員の回答状況を含む完全な状態

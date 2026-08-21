@@ -21,6 +21,9 @@ import {
   getPlayerView,
   getAllPlayerTokens,
   getGameEpoch,
+  getQuiz,
+  setQuiz,
+  getQuizMeta,
 } from "./gameState.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -83,7 +86,7 @@ io.on("connection", (socket) => {
   // 参加者ページがマウントされた直後に呼ばれる。今の世代IDを教えるだけで、
   // まだプレイヤーとして登録しない(自動再参加すべきか判断するのはクライアント側)
   socket.on("player:hello", () => {
-    socket.emit("epoch", { gameEpoch: getGameEpoch() });
+    socket.emit("epoch", { gameEpoch: getGameEpoch(), quizTitle: getQuizMeta().title });
   });
 
   socket.on("player:join", ({ token, name }) => {
@@ -107,6 +110,19 @@ io.on("connection", (socket) => {
   socket.on("host:leaderboard", () => showLeaderboard());
   socket.on("host:reset", () => resetGame());
   socket.on("host:kick", ({ token }) => kickPlayer(token));
+
+  // --- クイズ設定 ---
+  socket.on("host:getQuiz", (cb) => {
+    cb?.({ ok: true, quiz: getQuiz() });
+  });
+  socket.on("host:setQuiz", (newQuiz, cb) => {
+    try {
+      setQuiz(newQuiz);
+      cb?.({ ok: true });
+    } catch (err) {
+      cb?.({ ok: false, error: err.message });
+    }
+  });
 
   socket.on("disconnect", () => {
     const role = socketRole.get(socket.id);

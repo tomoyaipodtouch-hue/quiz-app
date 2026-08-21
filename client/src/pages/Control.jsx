@@ -3,6 +3,7 @@ import { socket } from "../socket.js";
 import { useJoinUrl } from "../useJoinUrl.js";
 import HistoryList from "../HistoryList.jsx";
 import ThemeToggle from "../ThemeToggle.jsx";
+import QuizSettings from "../QuizSettings.jsx";
 
 const STATUS_LABEL = {
   lobby: "待機中",
@@ -15,6 +16,7 @@ const STATUS_LABEL = {
 export default function Control() {
   const [state, setState] = useState(null);
   const [showHistory, setShowHistory] = useState(false);
+  const [quizDraft, setQuizDraft] = useState(null);
   const joinUrls = useJoinUrl();
 
   useEffect(() => {
@@ -40,9 +42,36 @@ export default function Control() {
     }
   }
 
+  function openSettings() {
+    socket.emit("host:getQuiz", (res) => {
+      if (res.ok) setQuizDraft(res.quiz);
+    });
+  }
+
+  function handleSaveQuiz(newQuiz, callback) {
+    socket.emit("host:setQuiz", newQuiz, (res) => {
+      callback(res);
+      if (res.ok) setQuizDraft(null);
+    });
+  }
+
+  if (quizDraft) {
+    return (
+      <div className="page" style={{ alignItems: "stretch" }}>
+        <ThemeToggle style={{ position: "fixed", top: 16, right: 16 }} />
+        <div style={{ width: "100%", maxWidth: 800, margin: "0 auto" }}>
+          <QuizSettings initialQuiz={quizDraft} onSave={handleSaveQuiz} onCancel={() => setQuizDraft(null)} />
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="page" style={{ alignItems: "stretch" }}>
       <ThemeToggle style={{ position: "fixed", top: 16, right: 16 }} />
+      <button className="btn-chip" style={{ position: "fixed", top: 16, right: 60 }} onClick={openSettings}>
+        ⚙ クイズ設定
+      </button>
       <div className="control-grid">
         <div className="card" style={{ maxWidth: "none" }}>
           <div className="badge">{STATUS_LABEL[state.status]}</div>

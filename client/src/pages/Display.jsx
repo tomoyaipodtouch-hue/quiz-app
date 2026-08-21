@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { QRCodeSVG } from "qrcode.react";
 import { socket } from "../socket.js";
 import { useJoinUrl } from "../useJoinUrl.js";
@@ -11,7 +11,6 @@ const CHOICE_LABELS = ["A", "B", "C", "D"];
 export default function Display() {
   const [state, setState] = useState(null);
   const joinUrls = useJoinUrl();
-  const rootRef = useRef(null);
 
   useEffect(() => {
     socket.emit("display:hello");
@@ -20,27 +19,16 @@ export default function Display() {
     return () => socket.off("state", onState);
   }, []);
 
-  function enterFullscreen() {
-    rootRef.current?.requestFullscreen?.();
-  }
-
   if (!state) {
     return (
-      <div className="display-fullscreen" ref={rootRef}>
+      <div className="display-fullscreen">
         <p className="dim">接続中...</p>
       </div>
     );
   }
 
   return (
-    <div className="display-fullscreen" ref={rootRef}>
-      <button
-        className="btn btn-secondary"
-        style={{ position: "fixed", top: 16, right: 140 }}
-        onClick={enterFullscreen}
-      >
-        フルスクリーン
-      </button>
+    <div className="display-fullscreen">
       <ThemeToggle style={{ position: "fixed", top: 16, right: 16 }} />
 
       {state.status === "lobby" && (

@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { socket } from "../socket.js";
 import ResultBars from "../ResultBars.jsx";
 import HistoryList from "../HistoryList.jsx";
-import ThemeToggle from "../ThemeToggle.jsx";
+import TopBar from "../TopBar.jsx";
 
 function getOrCreateToken() {
   let token = localStorage.getItem("quiz_player_token");
@@ -21,9 +21,9 @@ export default function Play() {
   const [state, setState] = useState(null);
   const [renaming, setRenaming] = useState(false);
   const [renameValue, setRenameValue] = useState("");
-  const [showHistory, setShowHistory] = useState(false);
   const [selectedChoice, setSelectedChoice] = useState(null);
   const [justSubmitted, setJustSubmitted] = useState(false);
+  const [quizTitle, setQuizTitle] = useState("クイズ");
   const token = getOrCreateToken();
   const joinedRef = useRef(joined);
   joinedRef.current = joined;
@@ -37,7 +37,6 @@ export default function Play() {
         setJoined(false);
         setName("");
         setRenaming(false);
-        setShowHistory(false);
       }
       setState(s);
     }
@@ -46,7 +45,8 @@ export default function Play() {
     // 今の世代IDを問い合わせて、保存されている名前が今のゲームのものであれば
     // 自動で再参加する(リロード/再接続対策)。世代が古ければ(＝リセット後)
     // 参加登録の画面からやり直させる
-    function onEpoch({ gameEpoch }) {
+    function onEpoch({ gameEpoch, quizTitle: title }) {
+      if (title) setQuizTitle(title);
       const savedEpoch = localStorage.getItem("quiz_game_epoch");
       const savedName = localStorage.getItem("quiz_player_name");
       if (savedName && savedEpoch === gameEpoch) {
@@ -110,88 +110,102 @@ export default function Play() {
     setRenaming(false);
   }
 
+  const displayTitle = state?.quiz?.title ?? quizTitle;
+
   if (!joined) {
     return (
-      <div className="page" style={{ justifyContent: "center" }}>
-        <form className="card" onSubmit={handleJoin}>
-          <div className="title">クイズに参加</div>
-          <p className="dim">名前を入力して参加してください</p>
-          <input
-            type="text"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            placeholder="なまえ"
-            maxLength={20}
-            autoFocus
-          />
-          <div className="btn-row">
-            <button className="btn" type="submit" style={{ flex: 1 }}>
-              参加する
-            </button>
-          </div>
-        </form>
+      <div className="page" style={{ padding: 0, justifyContent: "flex-start" }}>
+        <TopBar title={displayTitle} />
+        <div style={{ padding: 24, width: "100%", display: "flex", justifyContent: "center" }}>
+          <form className="card" onSubmit={handleJoin}>
+            <div className="title">クイズに参加</div>
+            <p className="dim">名前を入力して参加してください</p>
+            <input
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="なまえ"
+              maxLength={20}
+              autoFocus
+            />
+            <div className="btn-row">
+              <button className="btn" type="submit" style={{ flex: 1 }}>
+                参加する
+              </button>
+            </div>
+          </form>
+        </div>
       </div>
     );
   }
 
   if (!state) {
     return (
-      <div className="page" style={{ justifyContent: "center" }}>
-        <p className="dim">接続中...</p>
+      <div className="page" style={{ padding: 0, justifyContent: "flex-start" }}>
+        <TopBar title={displayTitle} />
+        <p className="dim" style={{ marginTop: 24 }}>
+          接続中...
+        </p>
       </div>
     );
   }
 
+  // 今答えている問題(または直前の状態)は一番上、その下に過去の問題を新しい順に並べる。
+  // reveal以降は今の問題がhistoryにも積まれるので、重複しないよう除外する
+  const pastHistory = state.history.filter((h) => h.questionIndex !== state.questionIndex);
+
   return (
-    <div className="page" style={{ justifyContent: "flex-start" }}>
-      <div className="player-topbar">
-        <span className="player-topbar-name">{state.me?.name ?? name}</span>
-        <div className="player-topbar-actions">
-          <ThemeToggle />
-          <button className="btn-chip" onClick={startRename}>
-            名前を変更
-          </button>
-          <button
-            className={`btn-chip ${showHistory ? "active" : ""}`}
-            onClick={() => setShowHistory((v) => !v)}
-          >
-            {showHistory ? "クイズに戻る" : "過去の問題"}
-          </button>
+    <div className="page" style={{ padding: 0, justifyContent: "flex-start" }}>
+      <TopBar title={displayTitle} />
+
+      <div style={{ width: "100%", maxWidth: 480, padding: "16px 16px 0" }}>
+        <div className="player-topbar" style={{ maxWidth: "none", marginBottom: 0 }}>
+          <span className="player-topbar-name">{state.me?.name ?? name}</span>
+          <div className="player-topbar-actions">
+            <button className="btn-chip" onClick={startRename}>
+              名前を変更
+            </button>
+          </div>
         </div>
+
+        {renaming && (
+          <form className="rename-form" onSubmit={handleRenameSubmit} style={{ maxWidth: "none", marginTop: 12 }}>
+            <input
+              type="text"
+              value={renameValue}
+              onChange={(e) => setRenameValue(e.target.value)}
+              maxLength={20}
+              autoFocus
+            />
+            <button className="btn" type="submit">
+              保存
+            </button>
+            <button type="button" className="btn btn-secondary" onClick={() => setRenaming(false)}>
+              キャンセル
+            </button>
+          </form>
+        )}
       </div>
 
-      {renaming && (
-        <form className="rename-form" onSubmit={handleRenameSubmit}>
-          <input
-            type="text"
-            value={renameValue}
-            onChange={(e) => setRenameValue(e.target.value)}
-            maxLength={20}
-            autoFocus
-          />
-          <button className="btn" type="submit">
-            保存
-          </button>
-          <button type="button" className="btn btn-secondary" onClick={() => setRenaming(false)}>
-            キャンセル
-          </button>
-        </form>
-      )}
-
-      <div style={{ width: "100%", display: "flex", flexDirection: "column", alignItems: "center", flex: 1 }}>
-        {showHistory ? (
-          <div style={{ width: "100%", maxWidth: 480 }}>
-            <HistoryList history={state.history} totalQuestions={state.quiz.totalQuestions} />
-          </div>
-        ) : (
-          <MainContent
-            state={state}
-            selectedChoice={selectedChoice}
-            setSelectedChoice={setSelectedChoice}
-            handleSubmitAnswer={handleSubmitAnswer}
-            justSubmitted={justSubmitted}
-          />
-        )}
+      <div
+        style={{
+          width: "100%",
+          maxWidth: 480,
+          margin: "0 auto",
+          padding: "16px",
+          display: "flex",
+          flexDirection: "column",
+          gap: 16,
+        }}
+      >
+        <MainContent
+          state={state}
+          selectedChoice={selectedChoice}
+          setSelectedChoice={setSelectedChoice}
+          handleSubmitAnswer={handleSubmitAnswer}
+          justSubmitted={justSubmitted}
+        />
+        <HistoryList history={pastHistory} totalQuestions={state.quiz.totalQuestions} />
       </div>
     </div>
   );
