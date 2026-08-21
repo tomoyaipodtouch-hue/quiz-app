@@ -72,7 +72,7 @@ export default function Control() {
 
   return (
     <div className="page" style={{ alignItems: "stretch" }}>
-      <div style={{ position: "fixed", top: 16, right: 16, display: "flex", gap: 8, zIndex: 20 }}>
+      <div className="control-toolbar">
         <button className="btn-chip" onClick={openDisplayWindow}>
           ⧉ 表示画面を開く
         </button>
