@@ -289,9 +289,12 @@ function MainContent({ state, selectedChoice, setSelectedChoice, handleSubmitAns
             correctIndex={state.question.correctIndex}
             choiceCounts={state.choiceCounts}
             myChoiceIndex={me?.lastChoiceIndex}
+            compact
           />
         )}
-        {state.question.explanation && <div className="explanation-box">{state.question.explanation}</div>}
+        {state.question.explanation && (
+          <div className="explanation-box compact">{state.question.explanation}</div>
+        )}
       </div>
     );
   }

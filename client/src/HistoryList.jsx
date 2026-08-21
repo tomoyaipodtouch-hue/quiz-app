@@ -23,8 +23,9 @@ export default function HistoryList({ history, totalQuestions }) {
               correctIndex={h.correctIndex}
               choiceCounts={h.choiceCounts}
               myChoiceIndex={h.myChoiceIndex ?? undefined}
+              compact
             />
-            {h.explanation && <div className="explanation-box">{h.explanation}</div>}
+            {h.explanation && <div className="explanation-box compact">{h.explanation}</div>}
           </div>
         ))}
     </div>
