@@ -118,7 +118,7 @@ export default function Play() {
         <TopBar title={displayTitle} />
         <div style={{ padding: 24, width: "100%", display: "flex", justifyContent: "center" }}>
           <form className="card" onSubmit={handleJoin}>
-            <div className="title">クイズに参加</div>
+            <div className="title title-sm">クイズに参加</div>
             <p className="dim">名前を入力して参加してください</p>
             <input
               type="text"
@@ -215,7 +215,7 @@ function MainContent({ state, selectedChoice, setSelectedChoice, handleSubmitAns
   if (state.status === "lobby") {
     return (
       <div className="card" style={{ textAlign: "center" }}>
-        <div className="title">参加しました！</div>
+        <div className="title title-sm">参加しました！</div>
         <p className="dim">{state.me?.name} さん、出題者が開始するまでお待ちください</p>
       </div>
     );
@@ -299,8 +299,8 @@ function MainContent({ state, selectedChoice, setSelectedChoice, handleSubmitAns
   if (state.status === "leaderboard") {
     return (
       <div className="card" style={{ textAlign: "center" }}>
-        <div className="title">現在の順位</div>
-        <p style={{ fontSize: "2rem", fontWeight: 800, color: "var(--accent)" }}>
+        <div className="title title-sm">現在の順位</div>
+        <p style={{ fontSize: "1.6rem", fontWeight: 700, color: "var(--accent)" }}>
           {state.rank ? `${state.rank}位` : "-"}
         </p>
         <p className="dim">合計スコア: {state.me?.score ?? 0}</p>
@@ -312,8 +312,8 @@ function MainContent({ state, selectedChoice, setSelectedChoice, handleSubmitAns
   if (state.status === "ended") {
     return (
       <div className="card" style={{ textAlign: "center" }}>
-        <div className="title">クイズ終了！</div>
-        <p style={{ fontSize: "2rem", fontWeight: 800, color: "var(--accent)" }}>
+        <div className="title title-sm">クイズ終了！</div>
+        <p style={{ fontSize: "1.6rem", fontWeight: 700, color: "var(--accent)" }}>
           {state.rank ? `${state.rank}位` : "-"}
         </p>
         <p className="dim">最終スコア: {state.me?.score ?? 0}</p>
