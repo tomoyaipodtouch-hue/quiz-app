@@ -1,17 +1,20 @@
 :root {
-  /* ダークがこのアプリの既定テーマ */
-  --bg: #0c0c10;
-  --bg-soft: #19191f;
-  --card: #19191f;
-  --border: #2c2c34;
-  --text: #f5f5f7;
-  --text-dim: #93939c;
-  --accent: #3b82f6;
-  --bar: #f5820d;
+  /* ダークがこのアプリの既定テーマ。「業務システム」らしい寒色寄りのスレート+
+     クリアな青系アクセントに調整(彩度低めの汎用ブルーから引き締めた) */
+  --bg: #0a0d13;
+  --bg-soft: #131722;
+  --card: #131722;
+  --border: #232838;
+  --text: #edf0f6;
+  --text-dim: #8790a3;
+  --accent: #4c7fff;
   --good: #22c55e;
   --bad: #ef4444;
   --purple: #8b5cf6;
   --track: rgba(255, 255, 255, 0.08);
+  --radius: 10px;
+  --radius-sm: 7px;
+  --font-mono: "SFMono-Regular", "JetBrains Mono", Consolas, "Liberation Mono", Menlo, monospace;
 
   /* 選択肢A/B/C/D用の識別色(dataviz skillのカテゴリカルパレット準拠、
      隣接比較は両モードでフルパス。バー・円グラフで共通使用) */
@@ -25,14 +28,13 @@
 }
 
 :root[data-theme="light"] {
-  --bg: #f5f5f5;
-  --bg-soft: #ececec;
+  --bg: #f4f6fa;
+  --bg-soft: #eceef3;
   --card: #ffffff;
-  --border: #e0e0e0;
-  --text: #0b0b0b;
-  --text-dim: #5c5c5c;
-  --accent: #2a78d6;
-  --bar: #eb6834;
+  --border: #dde1ea;
+  --text: #0d1117;
+  --text-dim: #5b6472;
+  --accent: #2f5fdb;
   --good: #0ca30c;
   --bad: #d03b3b;
   --purple: #4a3aa7;
@@ -78,7 +80,7 @@ button {
 .card {
   background: var(--card);
   border: 1px solid var(--border);
-  border-radius: 16px;
+  border-radius: var(--radius);
   padding: 24px;
   width: 100%;
   max-width: 480px;
@@ -100,9 +102,15 @@ button {
   color: var(--text-dim);
 }
 
+/* スコアやセッションIDなど、数字/コード系の表示に使う等幅フォント */
+.mono {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+
 .btn {
   border: none;
-  border-radius: 12px;
+  border-radius: var(--radius);
   padding: 14px 20px;
   font-size: 1.05rem;
   font-weight: 700;
@@ -133,7 +141,7 @@ input[type="text"],
 input[type="number"] {
   width: 100%;
   padding: 14px;
-  border-radius: 10px;
+  border-radius: var(--radius-sm);
   border: 1px solid var(--border);
   background: var(--bg-soft);
   color: var(--text);
@@ -151,7 +159,7 @@ input[type="number"] {
 .choice-btn {
   background: var(--bg-soft);
   border: 1px solid var(--border);
-  border-radius: 14px;
+  border-radius: var(--radius);
   padding: 16px 18px;
   font-size: 0.95rem;
   font-weight: 500;
@@ -216,7 +224,7 @@ input[type="number"] {
   justify-content: space-between;
   background: var(--bg-soft);
   border: 1px solid var(--border);
-  border-radius: 10px;
+  border-radius: var(--radius-sm);
   padding: 10px 14px;
 }
 
@@ -242,7 +250,7 @@ input[type="number"] {
   gap: 12px;
   background: var(--bg-soft);
   border: 1px solid var(--border);
-  border-radius: 12px;
+  border-radius: var(--radius);
   padding: 14px 18px;
   font-size: 1.1rem;
   font-weight: 600;
@@ -313,7 +321,7 @@ input[type="number"] {
 .qr-box {
   background: white;
   padding: 12px;
-  border-radius: 12px;
+  border-radius: var(--radius-sm);
   display: inline-block;
 }
 
@@ -401,7 +409,7 @@ input[type="number"] {
 
 .result-bar-fill {
   height: 100%;
-  background: var(--bar);
+  background: var(--accent);
   transition: width 0.4s ease;
 }
 
@@ -415,7 +423,7 @@ input[type="number"] {
 .explanation-box {
   margin-top: 16px;
   padding: 14px 16px;
-  border-radius: 12px;
+  border-radius: var(--radius);
   background: var(--bg-soft);
   border-left: 3px solid var(--accent);
   text-align: left;
@@ -427,7 +435,7 @@ input[type="number"] {
 /* --- 正解/不正解のバナー --- */
 .reveal-banner {
   padding: 16px;
-  border-radius: 12px;
+  border-radius: var(--radius);
   text-align: center;
   font-size: 1.1rem;
   font-weight: 700;
@@ -459,7 +467,7 @@ input[type="number"] {
 .history-card {
   background: var(--card);
   border: 1px solid var(--border);
-  border-radius: 16px;
+  border-radius: var(--radius);
   padding: 20px;
   text-align: left;
 }
@@ -596,7 +604,7 @@ input[type="number"] {
 .lobby-split-side {
   background: var(--bg-soft);
   border: 1px solid var(--border);
-  border-radius: 14px;
+  border-radius: var(--radius);
   padding: 20px;
   text-align: left;
   max-height: 70vh;
@@ -685,7 +693,7 @@ input[type="number"] {
 .settings-errors {
   background: color-mix(in srgb, var(--bad) 15%, var(--bg-soft));
   border: 1px solid var(--bad);
-  border-radius: 10px;
+  border-radius: var(--radius-sm);
   padding: 10px 14px;
   margin-top: 12px;
   font-size: 0.85rem;
@@ -705,7 +713,7 @@ input[type="number"] {
 .settings-question-card {
   background: var(--bg-soft);
   border: 1px solid var(--border);
-  border-radius: 14px;
+  border-radius: var(--radius);
   padding: 16px;
   display: flex;
   flex-direction: column;

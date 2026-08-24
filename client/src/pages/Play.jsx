@@ -338,7 +338,7 @@ function MainContent({ state, selectedChoice, setSelectedChoice, handleSubmitAns
     return (
       <div className="card" style={{ textAlign: "center" }}>
         <div className="title title-sm">現在の順位</div>
-        <p style={{ fontSize: "1.6rem", fontWeight: 700, color: "var(--accent)" }}>
+        <p className="mono" style={{ fontSize: "1.6rem", fontWeight: 700, color: "var(--accent)" }}>
           {state.rank ? `${state.rank}位` : "-"}
         </p>
         <p className="dim">合計スコア: {state.me?.score ?? 0}</p>
@@ -351,7 +351,7 @@ function MainContent({ state, selectedChoice, setSelectedChoice, handleSubmitAns
     return (
       <div className="card" style={{ textAlign: "center" }}>
         <div className="title title-sm">クイズ終了！</div>
-        <p style={{ fontSize: "1.6rem", fontWeight: 700, color: "var(--accent)" }}>
+        <p className="mono" style={{ fontSize: "1.6rem", fontWeight: 700, color: "var(--accent)" }}>
           {state.rank ? `${state.rank}位` : "-"}
         </p>
         <p className="dim">最終スコア: {state.me?.score ?? 0}</p>

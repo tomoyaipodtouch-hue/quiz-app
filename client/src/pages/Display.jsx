@@ -59,7 +59,7 @@ export default function Display() {
                 <span className="dim" style={{ fontSize: "1.2rem" }}>
                   セッションID:{" "}
                 </span>
-                <span style={{ fontWeight: 800, fontSize: "2.2rem", letterSpacing: "0.15em" }}>
+                <span className="mono" style={{ fontWeight: 800, fontSize: "2.2rem", letterSpacing: "0.15em" }}>
                   {state.joinCode}
                 </span>
               </p>
@@ -127,9 +127,9 @@ export default function Display() {
           <div style={{ display: "flex", flexDirection: "column", gap: 10, marginTop: 20 }}>
             {state.leaderboard.slice(0, 8).map((p, i) => (
               <div className="leaderboard-row" key={p.token}>
-                <span className="leaderboard-rank">{i + 1}</span>
+                <span className="leaderboard-rank mono">{i + 1}</span>
                 <span style={{ flex: 1, textAlign: "left" }}>{p.name}</span>
-                <span>{p.score}点</span>
+                <span className="mono">{p.score}点</span>
               </div>
             ))}
           </div>

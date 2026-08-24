@@ -106,7 +106,7 @@ export default function Control() {
             </button>
             {state.joinCodeEnabled && (
               <>
-                <span style={{ fontWeight: 800, fontSize: "1.15rem", letterSpacing: "0.15em" }}>
+                <span className="mono" style={{ fontWeight: 800, fontSize: "1.15rem", letterSpacing: "0.15em" }}>
                   {state.joinCode}
                 </span>
                 <button className="btn-chip" onClick={() => socket.emit("host:regenerateJoinCode")}>

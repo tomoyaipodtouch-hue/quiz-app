@@ -24,7 +24,7 @@ export default function ResultBars({ choices, correctIndex, choiceCounts, myChoi
                 {isCorrect && <span className="result-badge correct">正解</span>}
                 {isMine && <span className="result-badge mine">あなたの回答</span>}
               </span>
-              <span className="result-row-pct">{pct}%</span>
+              <span className="result-row-pct mono">{pct}%</span>
             </div>
             <div className="result-bar-track">
               <div
