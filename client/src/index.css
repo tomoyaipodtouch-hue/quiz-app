@@ -588,56 +588,47 @@ input[type="number"] {
   margin-bottom: 8px;
 }
 
-/* --- 表示画面(投影用)の質問一覧パネル(左下に固定) --- */
-.display-questions-panel {
+/* --- 表示画面(投影用)：出題者が選んだ質問を中央に大きく映す --- */
+.featured-question-overlay {
   position: fixed;
-  left: 20px;
-  bottom: 20px;
-  width: 320px;
-  max-height: 40vh;
-  overflow-y: auto;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.6);
+  padding: 40px;
+  z-index: 50;
+}
+
+.featured-question-card {
   background: var(--card);
   border: 1px solid var(--border);
   border-radius: var(--radius);
-  padding: 14px 16px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
-  z-index: 15;
-  text-align: left;
+  padding: 40px 48px;
+  max-width: 900px;
+  text-align: center;
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.45);
 }
 
-.display-questions-title {
+.featured-question-label {
   font-weight: 800;
-  font-size: 1rem;
-  margin-bottom: 8px;
-}
-
-.display-questions-panel ul {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.display-questions-panel li {
-  font-size: 0.9rem;
-  line-height: 1.4;
-  border-top: 1px solid var(--border);
-  padding-top: 8px;
-}
-
-.display-questions-panel li:first-child {
-  border-top: none;
-  padding-top: 0;
-}
-
-.display-questions-name {
-  display: block;
-  font-weight: 700;
   color: var(--accent);
-  font-size: 0.8rem;
-  margin-bottom: 2px;
+  font-size: 1.1rem;
+  margin-bottom: 16px;
+}
+
+.featured-question-text {
+  font-size: 1.8rem;
+  font-weight: 700;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  margin: 0 0 20px;
+}
+
+.featured-question-name {
+  color: var(--text-dim);
+  font-size: 1.1rem;
+  margin: 0;
 }
 
 .question-toast {

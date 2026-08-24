@@ -24,7 +24,7 @@ const state = {
   joinCode: generatePin(), // 参加(/play)時に入力させる6桁のセッションID。サーバー起動時に発行
   joinCodeEnabled: false, // セッションIDでの参加制限を使うかどうか。Control画面からオン/オフ可能
   questions: [], // 説明会などでの質問受付機能。クイズの進行やリセットとは独立して溜まっていく
-  showQuestionsOnDisplay: false, // 表示画面(投影用)に質問一覧を出すかどうか
+  featuredQuestionId: null, // 出題者が選んで表示画面の中央に映している質問(1件のみ)
   anonymizeQuestionsOnDisplay: true, // 表示画面に出すとき、質問者名を隠して匿名表示にするかどうか
 };
 
@@ -177,11 +177,13 @@ export function submitQuestion(token, text) {
 
 export function clearQuestions() {
   state.questions = [];
+  state.featuredQuestionId = null;
   notify();
 }
 
-export function setShowQuestionsOnDisplay(show) {
-  state.showQuestionsOnDisplay = !!show;
+// 出題者が選んだ1件だけを表示画面の中央に映す。nullで解除
+export function setFeaturedQuestion(id) {
+  state.featuredQuestionId = id && state.questions.some((q) => q.id === id) ? id : null;
   notify();
 }
 
@@ -362,7 +364,7 @@ export function getHostView() {
     joinCode: state.joinCode,
     joinCodeEnabled: state.joinCodeEnabled,
     questions: state.questions,
-    showQuestionsOnDisplay: state.showQuestionsOnDisplay,
+    featuredQuestionId: state.featuredQuestionId,
     anonymizeQuestionsOnDisplay: state.anonymizeQuestionsOnDisplay,
   };
 }
@@ -409,13 +411,11 @@ export function getDisplayView() {
     history: state.history,
     theme: state.displayTheme,
     joinCode: state.joinCodeEnabled ? state.joinCode : null,
-    questions: state.showQuestionsOnDisplay
-      ? state.questions.slice(0, 6).map((q) => ({
-          id: q.id,
-          text: q.text,
-          name: state.anonymizeQuestionsOnDisplay ? null : q.name,
-        }))
-      : null,
+    featuredQuestion: (() => {
+      const q = state.questions.find((q) => q.id === state.featuredQuestionId);
+      if (!q) return null;
+      return { id: q.id, text: q.text, name: state.anonymizeQuestionsOnDisplay ? null : q.name };
+    })(),
   };
 }
 

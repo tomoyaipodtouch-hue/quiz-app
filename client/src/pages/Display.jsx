@@ -120,17 +120,13 @@ export default function Display() {
         </div>
       )}
 
-      {state.questions && state.questions.length > 0 && (
-        <div className="display-questions-panel">
-          <div className="display-questions-title">💬 質問</div>
-          <ul>
-            {state.questions.map((q) => (
-              <li key={q.id}>
-                <span className="display-questions-name">{q.name ?? "匿名"}</span>
-                {q.text}
-              </li>
-            ))}
-          </ul>
+      {state.featuredQuestion && (
+        <div className="featured-question-overlay">
+          <div className="featured-question-card">
+            <div className="featured-question-label">💬 質問</div>
+            <p className="featured-question-text">{state.featuredQuestion.text}</p>
+            <p className="featured-question-name">— {state.featuredQuestion.name ?? "匿名"}</p>
+          </div>
         </div>
       )}
 

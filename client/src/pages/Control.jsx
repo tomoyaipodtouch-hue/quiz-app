@@ -300,23 +300,18 @@ export default function Control() {
             </div>
             <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
               <button
-                className={`btn-chip ${state.showQuestionsOnDisplay ? "active" : ""}`}
+                className="btn-chip"
                 onClick={() =>
-                  socket.emit("host:setShowQuestionsOnDisplay", { show: !state.showQuestionsOnDisplay })
+                  socket.emit("host:setAnonymizeQuestionsOnDisplay", {
+                    anonymize: !state.anonymizeQuestionsOnDisplay,
+                  })
                 }
               >
-                表示画面に{state.showQuestionsOnDisplay ? "表示中" : "非表示"}
+                投影時: {state.anonymizeQuestionsOnDisplay ? "匿名表示" : "名前表示"}
               </button>
-              {state.showQuestionsOnDisplay && (
-                <button
-                  className="btn-chip"
-                  onClick={() =>
-                    socket.emit("host:setAnonymizeQuestionsOnDisplay", {
-                      anonymize: !state.anonymizeQuestionsOnDisplay,
-                    })
-                  }
-                >
-                  {state.anonymizeQuestionsOnDisplay ? "匿名表示" : "名前表示"}
+              {state.featuredQuestionId && (
+                <button className="btn-chip" onClick={() => socket.emit("host:setFeaturedQuestion", { id: null })}>
+                  表示画面から消す
                 </button>
               )}
               {state.questions?.length > 0 && (
@@ -326,26 +321,40 @@ export default function Control() {
               )}
             </div>
           </div>
+          <p className="dim" style={{ fontSize: "0.8rem", marginTop: 8 }}>
+            質問を選ぶと表示画面の中央に映せます
+          </p>
           <ul style={{ listStyle: "none", padding: 0, marginTop: 12, display: "flex", flexDirection: "column", gap: 10 }}>
-            {(state.questions ?? []).map((q) => (
-              <li
-                key={q.id}
-                style={{
-                  background: "var(--bg-soft)",
-                  border: "1px solid var(--border)",
-                  borderRadius: "var(--radius-sm)",
-                  padding: "10px 14px",
-                }}
-              >
-                <div style={{ display: "flex", justifyContent: "space-between", gap: 8 }}>
-                  <span style={{ fontWeight: 700 }}>{q.name}</span>
-                  <span className="dim mono" style={{ fontSize: "0.8rem" }}>
-                    {new Date(q.createdAt).toLocaleTimeString("ja-JP", { hour: "2-digit", minute: "2-digit" })}
-                  </span>
-                </div>
-                <p style={{ margin: "6px 0 0", whiteSpace: "pre-wrap" }}>{q.text}</p>
-              </li>
-            ))}
+            {(state.questions ?? []).map((q) => {
+              const isFeatured = state.featuredQuestionId === q.id;
+              return (
+                <li
+                  key={q.id}
+                  style={{
+                    background: "var(--bg-soft)",
+                    border: `1px solid ${isFeatured ? "var(--accent)" : "var(--border)"}`,
+                    borderRadius: "var(--radius-sm)",
+                    padding: "10px 14px",
+                  }}
+                >
+                  <div style={{ display: "flex", justifyContent: "space-between", gap: 8 }}>
+                    <span style={{ fontWeight: 700 }}>{q.name}</span>
+                    <span className="dim mono" style={{ fontSize: "0.8rem" }}>
+                      {new Date(q.createdAt).toLocaleTimeString("ja-JP", { hour: "2-digit", minute: "2-digit" })}
+                    </span>
+                  </div>
+                  <p style={{ margin: "6px 0 10px", whiteSpace: "pre-wrap" }}>{q.text}</p>
+                  <button
+                    className={`btn-chip ${isFeatured ? "active" : ""}`}
+                    onClick={() =>
+                      socket.emit("host:setFeaturedQuestion", { id: isFeatured ? null : q.id })
+                    }
+                  >
+                    {isFeatured ? "✓ 表示画面に表示中" : "表示画面に映す"}
+                  </button>
+                </li>
+              );
+            })}
             {(state.questions?.length ?? 0) === 0 && <li className="dim">まだ質問はありません</li>}
           </ul>
         </div>

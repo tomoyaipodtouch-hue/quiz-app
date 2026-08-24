@@ -32,7 +32,7 @@ import {
   setJoinCodeEnabled,
   submitQuestion,
   clearQuestions,
-  setShowQuestionsOnDisplay,
+  setFeaturedQuestion,
   setAnonymizeQuestionsOnDisplay,
 } from "./gameState.js";
 
@@ -146,7 +146,7 @@ io.on("connection", (socket) => {
     cb?.({ ok: true, code: regenerateJoinCode() });
   });
   socket.on("host:clearQuestions", () => clearQuestions());
-  socket.on("host:setShowQuestionsOnDisplay", ({ show }) => setShowQuestionsOnDisplay(show));
+  socket.on("host:setFeaturedQuestion", ({ id }) => setFeaturedQuestion(id));
   socket.on("host:setAnonymizeQuestionsOnDisplay", ({ anonymize }) => setAnonymizeQuestionsOnDisplay(anonymize));
 
   // --- クイズ設定 ---
