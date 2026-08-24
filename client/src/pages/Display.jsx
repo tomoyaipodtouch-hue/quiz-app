@@ -4,6 +4,7 @@ import { socket } from "../socket.js";
 import { useJoinUrl } from "../useJoinUrl.js";
 import ResultBars from "../ResultBars.jsx";
 import PieChart from "../PieChart.jsx";
+import { CrownIcon, rankColor } from "../RankBadge.jsx";
 
 const CHOICE_LABELS = ["A", "B", "C", "D"];
 
@@ -127,8 +128,8 @@ export default function Display() {
           <div style={{ display: "flex", flexDirection: "column", gap: 10, marginTop: 20 }}>
             {state.leaderboard.slice(0, 8).map((p) => (
               <div className="leaderboard-row" key={p.token}>
-                <span className="leaderboard-rank mono">
-                  {p.rank}
+                <span className="leaderboard-rank mono" style={{ color: rankColor(p.rank) }}>
+                  <CrownIcon rank={p.rank} size={22} /> {p.rank}
                   {p.tieCount > 1 && (
                     <span className="dim" style={{ fontSize: "0.6em", fontWeight: 400, marginLeft: 4 }}>
                       ({p.tieCount}人)

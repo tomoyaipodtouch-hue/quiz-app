@@ -4,6 +4,7 @@ import { useJoinUrl } from "../useJoinUrl.js";
 import HistoryList from "../HistoryList.jsx";
 import ThemeToggle, { SunIcon, MoonIcon } from "../ThemeToggle.jsx";
 import QuizSettings from "../QuizSettings.jsx";
+import { CrownIcon, rankColor } from "../RankBadge.jsx";
 
 const STATUS_LABEL = {
   lobby: "待機中",
@@ -194,8 +195,12 @@ export default function Control() {
               <p className="dim">クイズが終了しました</p>
               <ol style={{ listStyle: "none", paddingLeft: 0 }}>
                 {state.leaderboard.slice(0, 5).map((p) => (
-                  <li key={p.token}>
-                    {p.rank}位{p.tieCount > 1 ? `(${p.tieCount}人)` : ""} — {p.name} — {p.score}点
+                  <li key={p.token} style={{ color: rankColor(p.rank) }}>
+                    <CrownIcon rank={p.rank} size={16} /> {p.rank}位
+                    {p.tieCount > 1 ? `(${p.tieCount}人)` : ""}{" "}
+                    <span style={{ color: "var(--text)" }}>
+                      — {p.name} — {p.score}点
+                    </span>
                   </li>
                 ))}
               </ol>

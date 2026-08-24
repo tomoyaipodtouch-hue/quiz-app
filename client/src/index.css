@@ -12,6 +12,9 @@
   --bad: #ef4444;
   --purple: #8b5cf6;
   --track: rgba(255, 255, 255, 0.08);
+  --gold: #d4a017;
+  --silver: #939aa6;
+  --bronze: #b56a35;
   --radius: 10px;
   --radius-sm: 7px;
   --font-mono: "SFMono-Regular", "JetBrains Mono", Consolas, "Liberation Mono", Menlo, monospace;
@@ -39,6 +42,9 @@
   --bad: #d03b3b;
   --purple: #4a3aa7;
   --track: rgba(0, 0, 0, 0.08);
+  --gold: #b8860b;
+  --silver: #6b7280;
+  --bronze: #9c5a2e;
 
   --chart-a: #2a78d6;
   --chart-b: #eb6834;
@@ -257,10 +263,13 @@ input[type="number"] {
 }
 
 .leaderboard-rank {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
   font-size: 1.4rem;
   font-weight: 800;
   color: var(--accent);
-  width: 2ch;
+  min-width: 3.4ch;
 }
 
 .control-grid {
