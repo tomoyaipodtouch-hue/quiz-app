@@ -125,9 +125,16 @@ export default function Display() {
             {state.status === "ended" ? "最終結果" : "現在のランキング"}
           </div>
           <div style={{ display: "flex", flexDirection: "column", gap: 10, marginTop: 20 }}>
-            {state.leaderboard.slice(0, 8).map((p, i) => (
+            {state.leaderboard.slice(0, 8).map((p) => (
               <div className="leaderboard-row" key={p.token}>
-                <span className="leaderboard-rank mono">{i + 1}</span>
+                <span className="leaderboard-rank mono">
+                  {p.rank}
+                  {p.tieCount > 1 && (
+                    <span className="dim" style={{ fontSize: "0.6em", fontWeight: 400, marginLeft: 4 }}>
+                      ({p.tieCount}人)
+                    </span>
+                  )}
+                </span>
                 <span style={{ flex: 1, textAlign: "left" }}>{p.name}</span>
                 <span className="mono">{p.score}点</span>
               </div>

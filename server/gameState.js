@@ -263,8 +263,9 @@ function playersArray() {
   return [...state.players.values()];
 }
 
+// 同点は同じ順位にする(標準的な競技順位: 1,1,3,4...)。tieCountはその順位の人数
 function sortedLeaderboard() {
-  return playersArray()
+  const sorted = playersArray()
     .slice()
     .sort((a, b) => b.score - a.score)
     .map(({ token, name, score, lastCorrect, lastGained }) => ({
@@ -274,6 +275,20 @@ function sortedLeaderboard() {
       lastCorrect,
       lastGained,
     }));
+
+  let rank = 0;
+  let prevScore = null;
+  const withRank = sorted.map((p, i) => {
+    if (p.score !== prevScore) {
+      rank = i + 1;
+      prevScore = p.score;
+    }
+    return { ...p, rank };
+  });
+
+  const countByRank = {};
+  for (const p of withRank) countByRank[p.rank] = (countByRank[p.rank] ?? 0) + 1;
+  return withRank.map((p) => ({ ...p, tieCount: countByRank[p.rank] }));
 }
 
 export function getQuizMeta() {
@@ -391,7 +406,11 @@ export function getPlayerView(token) {
       : null,
     rank:
       state.status === "leaderboard" || state.status === "ended"
-        ? sortedLeaderboard().findIndex((p) => p.token === token) + 1
+        ? sortedLeaderboard().find((p) => p.token === token)?.rank ?? null
+        : null,
+    rankTieCount:
+      state.status === "leaderboard" || state.status === "ended"
+        ? sortedLeaderboard().find((p) => p.token === token)?.tieCount ?? null
         : null,
     history: getHistoryForPlayer(token),
   };

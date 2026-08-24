@@ -192,10 +192,10 @@ export default function Control() {
           {state.status === "ended" && (
             <>
               <p className="dim">クイズが終了しました</p>
-              <ol>
+              <ol style={{ listStyle: "none", paddingLeft: 0 }}>
                 {state.leaderboard.slice(0, 5).map((p) => (
                   <li key={p.token}>
-                    {p.name} — {p.score}点
+                    {p.rank}位{p.tieCount > 1 ? `(${p.tieCount}人)` : ""} — {p.name} — {p.score}点
                   </li>
                 ))}
               </ol>

@@ -341,6 +341,9 @@ function MainContent({ state, selectedChoice, setSelectedChoice, handleSubmitAns
         <p className="mono" style={{ fontSize: "1.6rem", fontWeight: 700, color: "var(--accent)" }}>
           {state.rank ? `${state.rank}位` : "-"}
         </p>
+        {state.rankTieCount > 1 && (
+          <p className="dim" style={{ fontSize: "0.85rem" }}>{state.rankTieCount}人が同率</p>
+        )}
         <p className="dim">合計スコア: {state.me?.score ?? 0}</p>
         <p className="dim">次の問題をお待ちください...</p>
       </div>
@@ -354,6 +357,9 @@ function MainContent({ state, selectedChoice, setSelectedChoice, handleSubmitAns
         <p className="mono" style={{ fontSize: "1.6rem", fontWeight: 700, color: "var(--accent)" }}>
           {state.rank ? `${state.rank}位` : "-"}
         </p>
+        {state.rankTieCount > 1 && (
+          <p className="dim" style={{ fontSize: "0.85rem" }}>{state.rankTieCount}人が同率</p>
+        )}
         <p className="dim">最終スコア: {state.me?.score ?? 0}</p>
       </div>
     );
