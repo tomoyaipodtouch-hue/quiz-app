@@ -23,6 +23,9 @@ const state = {
   displayTheme: "dark", // 表示画面(投影用)のテーマ。プロジェクター側を直接操作しないので出題者が遠隔で切り替える
   joinCode: generatePin(), // 参加(/play)時に入力させる6桁のセッションID。サーバー起動時に発行
   joinCodeEnabled: false, // セッションIDでの参加制限を使うかどうか。Control画面からオン/オフ可能
+  questions: [], // 説明会などでの質問受付機能。クイズの進行やリセットとは独立して溜まっていく
+  showQuestionsOnDisplay: false, // 表示画面(投影用)に質問一覧を出すかどうか
+  anonymizeQuestionsOnDisplay: true, // 表示画面に出すとき、質問者名を隠して匿名表示にするかどうか
 };
 
 export function getGameEpoch() {
@@ -151,6 +154,39 @@ export function removePlayerSocket(socketId) {
 
 export function kickPlayer(token) {
   state.players.delete(token);
+  notify();
+}
+
+// クイズの進行状況とは無関係に、参加者がいつでも投げられる質問。
+// 説明会などでの利用を想定し、ゲームのリセットでは消さない(host:clearQuestions で明示的にクリア)
+export function submitQuestion(token, text) {
+  const player = state.players.get(token);
+  if (!player) throw new Error("参加者情報が見つかりません");
+  const trimmed = typeof text === "string" ? text.trim() : "";
+  if (!trimmed) throw new Error("質問を入力してください");
+  if (trimmed.length > 300) throw new Error("質問は300文字以内で入力してください");
+  state.questions.unshift({
+    id: randomUUID(),
+    token,
+    name: player.name,
+    text: trimmed,
+    createdAt: Date.now(),
+  });
+  notify();
+}
+
+export function clearQuestions() {
+  state.questions = [];
+  notify();
+}
+
+export function setShowQuestionsOnDisplay(show) {
+  state.showQuestionsOnDisplay = !!show;
+  notify();
+}
+
+export function setAnonymizeQuestionsOnDisplay(anonymize) {
+  state.anonymizeQuestionsOnDisplay = !!anonymize;
   notify();
 }
 
@@ -325,6 +361,9 @@ export function getHostView() {
     displayTheme: state.displayTheme,
     joinCode: state.joinCode,
     joinCodeEnabled: state.joinCodeEnabled,
+    questions: state.questions,
+    showQuestionsOnDisplay: state.showQuestionsOnDisplay,
+    anonymizeQuestionsOnDisplay: state.anonymizeQuestionsOnDisplay,
   };
 }
 
@@ -370,6 +409,13 @@ export function getDisplayView() {
     history: state.history,
     theme: state.displayTheme,
     joinCode: state.joinCodeEnabled ? state.joinCode : null,
+    questions: state.showQuestionsOnDisplay
+      ? state.questions.slice(0, 6).map((q) => ({
+          id: q.id,
+          text: q.text,
+          name: state.anonymizeQuestionsOnDisplay ? null : q.name,
+        }))
+      : null,
   };
 }
 

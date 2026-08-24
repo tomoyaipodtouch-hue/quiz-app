@@ -4,6 +4,7 @@ import ResultBars from "../ResultBars.jsx";
 import HistoryList from "../HistoryList.jsx";
 import TopBar from "../TopBar.jsx";
 import { CrownIcon, rankColor } from "../RankBadge.jsx";
+import QuestionFab from "../QuestionFab.jsx";
 
 function getOrCreateToken() {
   let token = localStorage.getItem("quiz_player_token");
@@ -243,6 +244,7 @@ export default function Play() {
         />
         <HistoryList history={pastHistory} totalQuestions={state.quiz.totalQuestions} />
       </div>
+      <QuestionFab token={token} />
     </div>
   );
 }

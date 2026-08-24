@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { socket } from "../socket.js";
 import { useJoinUrl } from "../useJoinUrl.js";
 import HistoryList from "../HistoryList.jsx";
@@ -17,8 +17,11 @@ const STATUS_LABEL = {
 export default function Control() {
   const [state, setState] = useState(null);
   const [showHistory, setShowHistory] = useState(false);
+  const [showQuestions, setShowQuestions] = useState(false);
+  const [questionToast, setQuestionToast] = useState(null);
   const [quizDraft, setQuizDraft] = useState(null);
   const joinUrls = useJoinUrl();
+  const prevQuestionIds = useRef(null);
 
   useEffect(() => {
     socket.emit("control:hello");
@@ -26,6 +29,22 @@ export default function Control() {
     socket.on("state", onState);
     return () => socket.off("state", onState);
   }, []);
+
+  // 新しい質問が届いたら一時的にトーストで通知する
+  useEffect(() => {
+    if (!state?.questions) return;
+    const ids = new Set(state.questions.map((q) => q.id));
+    if (prevQuestionIds.current) {
+      const newest = state.questions.find((q) => !prevQuestionIds.current.has(q.id));
+      if (newest) {
+        setQuestionToast(newest);
+        const timer = setTimeout(() => setQuestionToast(null), 5000);
+        prevQuestionIds.current = ids;
+        return () => clearTimeout(timer);
+      }
+    }
+    prevQuestionIds.current = ids;
+  }, [state?.questions]);
 
   if (!state) {
     return (
@@ -53,6 +72,12 @@ export default function Control() {
     window.open("/display", "quiz-display", "width=1280,height=800,noopener");
   }
 
+  function confirmClearQuestions() {
+    if (confirm("届いた質問を全て削除します。よろしいですか？")) {
+      socket.emit("host:clearQuestions");
+    }
+  }
+
   function handleSaveQuiz(newQuiz, callback) {
     socket.emit("host:setQuiz", newQuiz, (res) => {
       callback(res);
@@ -73,12 +98,23 @@ export default function Control() {
 
   return (
     <div className="page" style={{ alignItems: "stretch" }}>
+      {questionToast && (
+        <div className="question-toast" style={{ left: 16, right: 16, bottom: "auto", top: 16, margin: "0 auto", maxWidth: 480 }}>
+          💬 {questionToast.name}さんから質問: {questionToast.text}
+        </div>
+      )}
       <div className="control-toolbar">
         <button className="btn-chip" onClick={openDisplayWindow}>
           ⧉ 表示画面を開く
         </button>
         <button className="btn-chip" onClick={openSettings}>
           ⚙ クイズ設定
+        </button>
+        <button
+          className={`btn-chip ${showQuestions ? "active" : ""}`}
+          onClick={() => setShowQuestions((v) => !v)}
+        >
+          💬 質問 ({state.questions?.length ?? 0})
         </button>
         <button
           className="btn-chip"
@@ -255,6 +291,65 @@ export default function Control() {
           </ul>
         </div>
       </div>
+
+      {showQuestions && (
+        <div className="card" style={{ width: "100%", maxWidth: 1100, margin: "20px auto 0" }}>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8 }}>
+            <div className="title" style={{ fontSize: "1.1rem", margin: 0 }}>
+              質問一覧 ({state.questions?.length ?? 0})
+            </div>
+            <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+              <button
+                className={`btn-chip ${state.showQuestionsOnDisplay ? "active" : ""}`}
+                onClick={() =>
+                  socket.emit("host:setShowQuestionsOnDisplay", { show: !state.showQuestionsOnDisplay })
+                }
+              >
+                表示画面に{state.showQuestionsOnDisplay ? "表示中" : "非表示"}
+              </button>
+              {state.showQuestionsOnDisplay && (
+                <button
+                  className="btn-chip"
+                  onClick={() =>
+                    socket.emit("host:setAnonymizeQuestionsOnDisplay", {
+                      anonymize: !state.anonymizeQuestionsOnDisplay,
+                    })
+                  }
+                >
+                  {state.anonymizeQuestionsOnDisplay ? "匿名表示" : "名前表示"}
+                </button>
+              )}
+              {state.questions?.length > 0 && (
+                <button className="btn-chip" onClick={confirmClearQuestions}>
+                  質問をクリア
+                </button>
+              )}
+            </div>
+          </div>
+          <ul style={{ listStyle: "none", padding: 0, marginTop: 12, display: "flex", flexDirection: "column", gap: 10 }}>
+            {(state.questions ?? []).map((q) => (
+              <li
+                key={q.id}
+                style={{
+                  background: "var(--bg-soft)",
+                  border: "1px solid var(--border)",
+                  borderRadius: "var(--radius-sm)",
+                  padding: "10px 14px",
+                }}
+              >
+                <div style={{ display: "flex", justifyContent: "space-between", gap: 8 }}>
+                  <span style={{ fontWeight: 700 }}>{q.name}</span>
+                  <span className="dim mono" style={{ fontSize: "0.8rem" }}>
+                    {new Date(q.createdAt).toLocaleTimeString("ja-JP", { hour: "2-digit", minute: "2-digit" })}
+                  </span>
+                </div>
+                <p style={{ margin: "6px 0 0", whiteSpace: "pre-wrap" }}>{q.text}</p>
+              </li>
+            ))}
+            {(state.questions?.length ?? 0) === 0 && <li className="dim">まだ質問はありません</li>}
+          </ul>
+        </div>
+      )}
 
       <div style={{ width: "100%", maxWidth: 1100, margin: "20px auto 0" }}>
         <button className="btn-chip" onClick={() => setShowHistory((v) => !v)}>

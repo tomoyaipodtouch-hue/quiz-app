@@ -30,6 +30,10 @@ import {
   verifyJoinCode,
   regenerateJoinCode,
   setJoinCodeEnabled,
+  submitQuestion,
+  clearQuestions,
+  setShowQuestionsOnDisplay,
+  setAnonymizeQuestionsOnDisplay,
 } from "./gameState.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -119,6 +123,15 @@ io.on("connection", (socket) => {
     submitAnswer(token, choiceIndex);
   });
 
+  socket.on("player:askQuestion", ({ token, text }, cb) => {
+    try {
+      submitQuestion(token, text);
+      cb?.({ ok: true });
+    } catch (err) {
+      cb?.({ ok: false, error: err.message });
+    }
+  });
+
   // --- host controls ---
   socket.on("host:start", () => startQuiz());
   socket.on("host:next", () => nextQuestion());
@@ -132,6 +145,9 @@ io.on("connection", (socket) => {
   socket.on("host:regenerateJoinCode", (cb) => {
     cb?.({ ok: true, code: regenerateJoinCode() });
   });
+  socket.on("host:clearQuestions", () => clearQuestions());
+  socket.on("host:setShowQuestionsOnDisplay", ({ show }) => setShowQuestionsOnDisplay(show));
+  socket.on("host:setAnonymizeQuestionsOnDisplay", ({ anonymize }) => setAnonymizeQuestionsOnDisplay(anonymize));
 
   // --- クイズ設定 ---
   socket.on("host:getQuiz", (cb) => {

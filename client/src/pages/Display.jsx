@@ -120,6 +120,20 @@ export default function Display() {
         </div>
       )}
 
+      {state.questions && state.questions.length > 0 && (
+        <div className="display-questions-panel">
+          <div className="display-questions-title">💬 質問</div>
+          <ul>
+            {state.questions.map((q) => (
+              <li key={q.id}>
+                <span className="display-questions-name">{q.name ?? "匿名"}</span>
+                {q.text}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
       {(state.status === "leaderboard" || state.status === "ended") && state.leaderboard && (
         <div style={{ width: "100%", maxWidth: 640 }}>
           <div className="title" style={{ fontSize: "1.6rem", textAlign: "center" }}>
