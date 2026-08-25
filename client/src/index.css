@@ -548,7 +548,7 @@ input[type="number"] {
   height: 50px;
   padding: 0 20px;
   border-radius: 999px;
-  background: var(--good);
+  background: oklch(76.8% 0.233 130.85);
   color: #fff;
   border: none;
   font-size: 1rem;
