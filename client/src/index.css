@@ -287,23 +287,35 @@ input[type="number"] {
   }
 }
 
+/* 固定配置だと下のカードに重なることがあったため、sticky でスクロール追従しつつ
+   通常のレイアウトフローに参加させ、常に十分な余白を確保する */
 .control-toolbar {
-  position: fixed;
-  top: 16px;
-  right: 16px;
+  position: sticky;
+  top: 0;
   display: flex;
-  gap: 8px;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto 20px;
+  padding: 10px 0;
+  background: var(--bg);
   z-index: 20;
+}
+
+.control-toolbar-spacer {
+  flex: 1;
+  min-width: 0;
 }
 
 @media (max-width: 700px) {
   .control-toolbar {
-    position: static;
-    width: 100%;
-    max-width: 1100px;
-    flex-wrap: wrap;
     justify-content: center;
-    margin-bottom: 16px;
+  }
+
+  .control-toolbar-spacer {
+    display: none;
   }
 }
 
@@ -516,8 +528,8 @@ input[type="number"] {
   border: 1px solid var(--border);
   color: var(--text-dim);
   border-radius: 999px;
-  padding: 6px 14px;
-  font-size: 0.8rem;
+  padding: 10px 18px;
+  font-size: 0.9rem;
   font-weight: 700;
   white-space: nowrap;
 }
@@ -526,6 +538,12 @@ input[type="number"] {
   background: var(--accent);
   border-color: var(--accent);
   color: white;
+}
+
+.btn-chip-danger {
+  background: transparent;
+  border: 1px solid var(--bad);
+  color: var(--bad);
 }
 
 .rename-form {

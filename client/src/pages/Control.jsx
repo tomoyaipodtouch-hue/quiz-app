@@ -127,6 +127,7 @@ export default function Control() {
         >
           {state.displayTheme === "dark" ? <SunIcon /> : <MoonIcon />} 投影画面
         </button>
+        <div className="control-toolbar-spacer" />
         <ThemeToggle />
       </div>
       <div className="control-grid">
@@ -315,7 +316,7 @@ export default function Control() {
                 </button>
               )}
               {state.questions?.length > 0 && (
-                <button className="btn-chip" onClick={confirmClearQuestions}>
+                <button className="btn-chip btn-chip-danger" onClick={confirmClearQuestions}>
                   質問をクリア
                 </button>
               )}
@@ -345,7 +346,8 @@ export default function Control() {
                   </div>
                   <p style={{ margin: "6px 0 10px", whiteSpace: "pre-wrap" }}>{q.text}</p>
                   <button
-                    className={`btn-chip ${isFeatured ? "active" : ""}`}
+                    className={`btn ${isFeatured ? "" : "btn-secondary"}`}
+                    style={{ width: "100%" }}
                     onClick={() =>
                       socket.emit("host:setFeaturedQuestion", { id: isFeatured ? null : q.id })
                     }
