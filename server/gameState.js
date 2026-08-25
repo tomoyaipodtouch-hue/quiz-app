@@ -19,7 +19,7 @@ const state = {
   players: new Map(), // token -> { token, socketId, name, score, answered, lastCorrect, lastGained }
   history: [], // 出題済みの問題の結果(集計済み)。revealAnswer() のタイミングで積む
   gameEpoch: randomUUID(), // リセットのたびに発行し直す世代ID。古い世代のブラウザは自動再参加させない
-  showParticipantsOnDisplay: true, // 表示画面(投影用)に参加者名を出すかどうか。出題者の設定で切り替え
+  showParticipantsOnDisplay: false, // 表示画面(投影用)に参加者名を出すかどうか。出題者の設定で切り替え(人数は常に表示)
   displayTheme: "dark", // 表示画面(投影用)のテーマ。プロジェクター側を直接操作しないので出題者が遠隔で切り替える
   joinCode: generatePin(), // 参加(/play)時に入力させる6桁のセッションID。サーバー起動時に発行
   joinCodeEnabled: false, // セッションIDでの参加制限を使うかどうか。Control画面からオン/オフ可能
