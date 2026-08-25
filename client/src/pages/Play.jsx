@@ -246,7 +246,7 @@ export default function Play() {
         />
         <HistoryList history={pastHistory} totalQuestions={state.quiz.totalQuestions} />
       </div>
-      <QuestionFab ref={questionFabRef} token={token} />
+      <QuestionFab ref={questionFabRef} token={token} hideTrigger={!state.quizEnabled} />
     </div>
   );
 }

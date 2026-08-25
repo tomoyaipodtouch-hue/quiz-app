@@ -19,7 +19,7 @@ function SpeechBubbleIcon() {
   );
 }
 
-const QuestionFab = forwardRef(function QuestionFab({ token }, ref) {
+const QuestionFab = forwardRef(function QuestionFab({ token, hideTrigger }, ref) {
   const [open, setOpen] = useState(false);
   const [text, setText] = useState("");
   const [sending, setSending] = useState(false);
@@ -51,9 +51,11 @@ const QuestionFab = forwardRef(function QuestionFab({ token }, ref) {
 
   return (
     <>
-      <button type="button" className="question-fab" onClick={() => setOpen((v) => !v)}>
-        <SpeechBubbleIcon /> 質問
-      </button>
+      {!hideTrigger && (
+        <button type="button" className="question-fab" onClick={() => setOpen((v) => !v)}>
+          <SpeechBubbleIcon /> 質問
+        </button>
+      )}
       {sent && <div className="question-toast">質問を送信しました</div>}
       {open && (
         <div className="question-fab-panel">
