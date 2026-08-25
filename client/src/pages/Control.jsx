@@ -281,7 +281,7 @@ export default function Control() {
           {state.status === "lobby" && joinUrls.length > 0 && (
             <div style={{ marginTop: 14 }}>
               <p className="dim" style={{ fontSize: "0.8rem" }}>
-                参加用URL(同じWi-Fi内のスマホから):
+                参加用URL:
               </p>
               {joinUrls.map((u) => (
                 <p key={u} style={{ fontWeight: 700, fontSize: "0.85rem" }}>
