@@ -18,7 +18,6 @@ const STATUS_LABEL = {
 export default function Control() {
   const [state, setState] = useState(null);
   const [showHistory, setShowHistory] = useState(false);
-  const [showQuestions, setShowQuestions] = useState(true);
   const [questionToast, setQuestionToast] = useState(null);
   const [quizDraft, setQuizDraft] = useState(null);
   const joinUrls = useJoinUrl();
@@ -118,12 +117,6 @@ export default function Control() {
           ⚙ クイズ設定
         </button>
         <button
-          className={`btn-chip ${showQuestions ? "active" : ""}`}
-          onClick={() => setShowQuestions((v) => !v)}
-        >
-          💬 質問 ({state.questions?.length ?? 0})
-        </button>
-        <button
           className="btn-chip"
           type="button"
           style={{ display: "inline-flex", alignItems: "center", gap: 4 }}
@@ -137,7 +130,8 @@ export default function Control() {
         <div className="control-toolbar-spacer" />
         <ThemeToggle />
       </div>
-      <div className="control-grid">
+      <div className="control-split">
+        <div className="control-split-col">
         <div className="card" style={{ maxWidth: "none", padding: "18px 20px" }}>
           <div className="badge">{STATUS_LABEL[state.status]}</div>
           <div className="title title-sm">{state.quiz.title}</div>
@@ -321,10 +315,21 @@ export default function Control() {
             {state.players.length === 0 && <li className="dim">まだ誰も参加していません</li>}
           </ul>
         </div>
-      </div>
 
-      {showQuestions && (
-        <div className="card" style={{ width: "100%", maxWidth: 1100, margin: "20px auto 0", padding: "28px 28px" }}>
+        <div>
+          <button className="btn-chip" onClick={() => setShowHistory((v) => !v)}>
+            {showHistory ? "過去の問題を隠す" : `過去の問題を見る (${state.history.length})`}
+          </button>
+          {showHistory && (
+            <div style={{ marginTop: 16 }}>
+              <HistoryList history={state.history} totalQuestions={state.quiz.totalQuestions} />
+            </div>
+          )}
+        </div>
+        </div>
+
+        <div className="control-split-col">
+        <div className="card" style={{ width: "100%", padding: "28px 28px" }}>
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8, flexWrap: "wrap" }}>
             <div className="title" style={{ fontSize: "1.4rem", margin: 0 }}>
               質問一覧 ({state.questions?.length ?? 0})
@@ -419,17 +424,7 @@ export default function Control() {
             {(state.questions?.length ?? 0) === 0 && <li className="dim">まだ質問はありません</li>}
           </ul>
         </div>
-      )}
-
-      <div style={{ width: "100%", maxWidth: 1100, margin: "20px auto 0" }}>
-        <button className="btn-chip" onClick={() => setShowHistory((v) => !v)}>
-          {showHistory ? "過去の問題を隠す" : `過去の問題を見る (${state.history.length})`}
-        </button>
-        {showHistory && (
-          <div style={{ marginTop: 16 }}>
-            <HistoryList history={state.history} totalQuestions={state.quiz.totalQuestions} />
-          </div>
-        )}
+        </div>
       </div>
     </div>
   );

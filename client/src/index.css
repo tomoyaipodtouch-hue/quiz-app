@@ -287,6 +287,39 @@ input[type="number"] {
   }
 }
 
+/* Control画面本体: 左(クイズ状況+参加者) / 右(質問一覧) の2ペイン。
+   それぞれ独立にスクロールさせ、常に画面内に収める */
+.control-split {
+  display: grid;
+  grid-template-columns: 380px 1fr;
+  gap: 20px;
+  width: 100%;
+  max-width: 1400px;
+  height: calc(100vh - 140px);
+  min-height: 420px;
+}
+
+.control-split-col {
+  height: 100%;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding-right: 4px;
+}
+
+@media (max-width: 900px) {
+  .control-split {
+    grid-template-columns: 1fr;
+    height: auto;
+  }
+  .control-split-col {
+    height: auto;
+    overflow-y: visible;
+    padding-right: 0;
+  }
+}
+
 /* 固定配置だと下のカードに重なることがあったため、sticky でスクロール追従しつつ
    通常のレイアウトフローに参加させ、常に十分な余白を確保する */
 .control-toolbar {
