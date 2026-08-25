@@ -171,6 +171,7 @@ export function submitQuestion(token, text) {
     name: player.name,
     text: trimmed,
     createdAt: Date.now(),
+    shown: false,
   });
   notify();
 }
@@ -181,9 +182,12 @@ export function clearQuestions() {
   notify();
 }
 
-// 出題者が選んだ1件だけを表示画面の中央に映す。nullで解除
+// 出題者が選んだ1件だけを表示画面の中央に映す。nullで解除。
+// 一度でも表示すると shown フラグは立てたままにする(解除しても「表示済み」として残す)
 export function setFeaturedQuestion(id) {
-  state.featuredQuestionId = id && state.questions.some((q) => q.id === id) ? id : null;
+  const q = id ? state.questions.find((q) => q.id === id) : null;
+  state.featuredQuestionId = q ? q.id : null;
+  if (q) q.shown = true;
   notify();
 }
 

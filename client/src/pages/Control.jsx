@@ -5,6 +5,7 @@ import HistoryList from "../HistoryList.jsx";
 import ThemeToggle, { SunIcon, MoonIcon } from "../ThemeToggle.jsx";
 import QuizSettings from "../QuizSettings.jsx";
 import { CrownIcon, rankColor } from "../RankBadge.jsx";
+import { qaQuestionsToCSV, downloadCSV } from "../csv.js";
 
 const STATUS_LABEL = {
   lobby: "待機中",
@@ -332,6 +333,16 @@ export default function Control() {
                 </button>
               )}
               {state.questions?.length > 0 && (
+                <button
+                  className="btn-chip"
+                  onClick={() =>
+                    downloadCSV(`questions_${Date.now()}.csv`, qaQuestionsToCSV(state.questions))
+                  }
+                >
+                  CSVで出力
+                </button>
+              )}
+              {state.questions?.length > 0 && (
                 <button className="btn-chip btn-chip-danger" onClick={confirmClearQuestions}>
                   質問をクリア
                 </button>
@@ -354,8 +365,25 @@ export default function Control() {
                     padding: "18px 20px",
                   }}
                 >
-                  <div style={{ display: "flex", justifyContent: "space-between", gap: 8 }}>
-                    <span style={{ fontWeight: 700, fontSize: "1.05rem" }}>{q.name}</span>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 8 }}>
+                    <span style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                      <span style={{ fontWeight: 700, fontSize: "1.05rem" }}>{q.name}</span>
+                      {q.shown && (
+                        <span
+                          className="mono"
+                          style={{
+                            fontSize: "0.75rem",
+                            fontWeight: 700,
+                            color: "var(--good)",
+                            border: "1px solid var(--good)",
+                            borderRadius: "999px",
+                            padding: "2px 8px",
+                          }}
+                        >
+                          表示済み
+                        </span>
+                      )}
+                    </span>
                     <span className="dim mono" style={{ fontSize: "0.85rem" }}>
                       {new Date(q.createdAt).toLocaleTimeString("ja-JP", { hour: "2-digit", minute: "2-digit" })}
                     </span>

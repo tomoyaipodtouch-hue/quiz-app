@@ -118,6 +118,20 @@ export function csvToQuestions(text) {
   return { questions, errors };
 }
 
+// 説明会などの質問受付機能で溜まった質問一覧をCSVに書き出す(クイズ問題とは別形式)
+export function qaQuestionsToCSV(questions) {
+  const headers = ["datetime", "name", "text", "shown"];
+  const lines = [headers.join(",")];
+  for (const q of questions) {
+    lines.push(
+      [new Date(q.createdAt).toLocaleString("ja-JP"), q.name, q.text, q.shown ? "済" : "未"]
+        .map(escapeCell)
+        .join(",")
+    );
+  }
+  return "﻿" + lines.join("\r\n");
+}
+
 export function downloadCSV(filename, csvText) {
   const blob = new Blob([csvText], { type: "text/csv;charset=utf-8" });
   const url = URL.createObjectURL(blob);
