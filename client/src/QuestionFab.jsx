@@ -1,6 +1,24 @@
 import { useState } from "react";
 import { socket } from "./socket.js";
 
+function SpeechBubbleIcon() {
+  return (
+    <svg
+      width="18"
+      height="18"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <path d="M4 5h16v11H8l-4 4V5z" />
+    </svg>
+  );
+}
+
 export default function QuestionFab({ token }) {
   const [open, setOpen] = useState(false);
   const [text, setText] = useState("");
@@ -30,7 +48,7 @@ export default function QuestionFab({ token }) {
   return (
     <>
       <button type="button" className="question-fab" onClick={() => setOpen((v) => !v)}>
-        💬 質問
+        <SpeechBubbleIcon /> 質問
       </button>
       {sent && <div className="question-toast">質問を送信しました</div>}
       {open && (
