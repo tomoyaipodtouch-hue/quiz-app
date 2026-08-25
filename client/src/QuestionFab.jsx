@@ -29,8 +29,8 @@ export default function QuestionFab({ token }) {
 
   return (
     <>
-      <button type="button" className="question-fab" onClick={() => setOpen((v) => !v)} aria-label="質問する">
-        💬
+      <button type="button" className="question-fab" onClick={() => setOpen((v) => !v)}>
+        💬 質問
       </button>
       {sent && <div className="question-toast">質問を送信しました</div>}
       {open && (

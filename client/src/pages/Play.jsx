@@ -131,7 +131,7 @@ export default function Play() {
         <TopBar title={displayTitle} />
         <div style={{ padding: 24, width: "100%", display: "flex", justifyContent: "center" }}>
           <form className="card" onSubmit={handleJoin}>
-            <div className="title title-sm">クイズに参加</div>
+            <div className="title title-sm">参加する</div>
             <p className="dim">名前を入力して参加してください</p>
             <input
               type="text"
@@ -254,7 +254,7 @@ function MainContent({ state, selectedChoice, setSelectedChoice, handleSubmitAns
     return (
       <div className="card" style={{ textAlign: "center" }}>
         <div className="title title-sm">参加しました！</div>
-        <p className="dim">{state.me?.name} さん、出題者が開始するまでお待ちください</p>
+        <p className="dim">{state.me?.name} さん、しばらくお待ちください</p>
       </div>
     );
   }
