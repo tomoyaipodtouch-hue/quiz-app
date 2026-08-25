@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { forwardRef, useImperativeHandle, useState } from "react";
 import { socket } from "./socket.js";
 
 function SpeechBubbleIcon() {
@@ -19,12 +19,16 @@ function SpeechBubbleIcon() {
   );
 }
 
-export default function QuestionFab({ token }) {
+const QuestionFab = forwardRef(function QuestionFab({ token }, ref) {
   const [open, setOpen] = useState(false);
   const [text, setText] = useState("");
   const [sending, setSending] = useState(false);
   const [error, setError] = useState("");
   const [sent, setSent] = useState(false);
+
+  useImperativeHandle(ref, () => ({
+    open: () => setOpen(true),
+  }));
 
   function handleSubmit(e) {
     e.preventDefault();
@@ -84,4 +88,6 @@ export default function QuestionFab({ token }) {
       )}
     </>
   );
-}
+});
+
+export default QuestionFab;

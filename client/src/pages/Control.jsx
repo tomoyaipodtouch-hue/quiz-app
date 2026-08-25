@@ -144,6 +144,13 @@ export default function Control() {
 
           <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap", marginBottom: 12 }}>
             <button
+              className={`btn-chip ${state.quizEnabled ? "active" : ""}`}
+              style={{ fontSize: "0.8rem", padding: "8px 14px" }}
+              onClick={() => socket.emit("host:setQuizEnabled", { enabled: !state.quizEnabled })}
+            >
+              🏆 クイズ機能: {state.quizEnabled ? "オン" : "オフ"}
+            </button>
+            <button
               className={`btn-chip ${state.joinCodeEnabled ? "active" : ""}`}
               style={{ fontSize: "0.8rem", padding: "8px 14px" }}
               onClick={() => socket.emit("host:setJoinCodeEnabled", { enabled: !state.joinCodeEnabled })}
@@ -171,16 +178,22 @@ export default function Control() {
               <p className="dim" style={{ fontSize: "0.85rem" }}>
                 参加者がスマホで参加するのを待っています
               </p>
-              <div className="btn-row">
-                <button
-                  className="btn"
-                  style={{ padding: "10px 16px", fontSize: "0.95rem" }}
-                  disabled={state.players.length === 0}
-                  onClick={() => socket.emit("host:start")}
-                >
-                  クイズ開始 ({state.players.length}人参加中)
-                </button>
-              </div>
+              {state.quizEnabled ? (
+                <div className="btn-row">
+                  <button
+                    className="btn"
+                    style={{ padding: "10px 16px", fontSize: "0.95rem" }}
+                    disabled={state.players.length === 0}
+                    onClick={() => socket.emit("host:start")}
+                  >
+                    クイズ開始 ({state.players.length}人参加中)
+                  </button>
+                </div>
+              ) : (
+                <p className="dim" style={{ fontSize: "0.85rem" }}>
+                  クイズ機能はオフになっています。質問受付だけが動いています。
+                </p>
+              )}
             </>
           )}
 

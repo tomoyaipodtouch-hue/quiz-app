@@ -34,6 +34,7 @@ import {
   clearQuestions,
   setFeaturedQuestion,
   setAnonymizeQuestionsOnDisplay,
+  setQuizEnabled,
 } from "./gameState.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -134,6 +135,7 @@ io.on("connection", (socket) => {
 
   // --- host controls ---
   socket.on("host:start", () => startQuiz());
+  socket.on("host:setQuizEnabled", ({ enabled }) => setQuizEnabled(enabled));
   socket.on("host:next", () => nextQuestion());
   socket.on("host:reveal", () => revealAnswer());
   socket.on("host:leaderboard", () => showLeaderboard());

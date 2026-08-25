@@ -32,6 +32,7 @@ export default function Play() {
   const token = getOrCreateToken();
   const joinedRef = useRef(joined);
   joinedRef.current = joined;
+  const questionFabRef = useRef(null);
 
   useEffect(() => {
     function onState(s) {
@@ -241,16 +242,47 @@ export default function Play() {
           setSelectedChoice={setSelectedChoice}
           handleSubmitAnswer={handleSubmitAnswer}
           justSubmitted={justSubmitted}
+          onAskQuestion={() => questionFabRef.current?.open()}
         />
         <HistoryList history={pastHistory} totalQuestions={state.quiz.totalQuestions} />
       </div>
-      <QuestionFab token={token} />
+      <QuestionFab ref={questionFabRef} token={token} />
     </div>
   );
 }
 
-function MainContent({ state, selectedChoice, setSelectedChoice, handleSubmitAnswer, justSubmitted }) {
+function MainContent({ state, selectedChoice, setSelectedChoice, handleSubmitAnswer, justSubmitted, onAskQuestion }) {
   if (state.status === "lobby") {
+    if (!state.quizEnabled) {
+      return (
+        <div className="card" style={{ textAlign: "center" }}>
+          <div className="title title-sm">参加しました！</div>
+          <p className="dim" style={{ marginBottom: 20 }}>
+            {state.me?.name} さん、質問があればいつでもどうぞ
+          </p>
+          <button
+            type="button"
+            className="btn"
+            style={{
+              width: "100%",
+              padding: "22px",
+              fontSize: "1.15rem",
+              background: "var(--good)",
+              display: "inline-flex",
+              alignItems: "center",
+              justifyContent: "center",
+              gap: 10,
+            }}
+            onClick={onAskQuestion}
+          >
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <path d="M4 5h16v11H8l-4 4V5z" />
+            </svg>
+            質問する
+          </button>
+        </div>
+      );
+    }
     return (
       <div className="card" style={{ textAlign: "center" }}>
         <div className="title title-sm">参加しました！</div>
