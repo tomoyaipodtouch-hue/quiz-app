@@ -30,21 +30,27 @@ export default function Control() {
     return () => socket.off("state", onState);
   }, []);
 
-  // 新しい質問が届いたら一時的にトーストで通知する
+  // 新しい質問が届いたら一時的にトーストで通知する。
+  // state.questions は state 更新のたびに新しい配列になるため、この effect 自体は
+  // 無関係な状態変化(回答受信など)でも毎回走る。新着検出のみここで行う
   useEffect(() => {
     if (!state?.questions) return;
     const ids = new Set(state.questions.map((q) => q.id));
     if (prevQuestionIds.current) {
       const newest = state.questions.find((q) => !prevQuestionIds.current.has(q.id));
-      if (newest) {
-        setQuestionToast(newest);
-        const timer = setTimeout(() => setQuestionToast(null), 5000);
-        prevQuestionIds.current = ids;
-        return () => clearTimeout(timer);
-      }
+      if (newest) setQuestionToast(newest);
     }
     prevQuestionIds.current = ids;
   }, [state?.questions]);
+
+  // トーストの自動消去はここで独立して管理する。questionToast が変わったときだけ
+  // タイマーを張り直すので、上のeffectが無関係な理由で再実行されても消去タイマーが
+  // 巻き戻ってトーストが消えなくなる、という不具合を避けられる
+  useEffect(() => {
+    if (!questionToast) return;
+    const timer = setTimeout(() => setQuestionToast(null), 5000);
+    return () => clearTimeout(timer);
+  }, [questionToast]);
 
   if (!state) {
     return (
