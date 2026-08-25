@@ -26,7 +26,7 @@ const state = {
   questions: [], // 説明会などでの質問受付機能。クイズの進行やリセットとは独立して溜まっていく
   featuredQuestionId: null, // 出題者が選んで表示画面の中央に映している質問(1件のみ)
   anonymizeQuestionsOnDisplay: true, // 表示画面に出すとき、質問者名を隠して匿名表示にするかどうか
-  quizEnabled: true, // クイズ機能そのものを使うかどうか。オフの間は host:start を受け付けない(質問受付機能には影響しない)
+  quizEnabled: false, // クイズ機能そのものを使うかどうか。オフの間は host:start を受け付けない(質問受付機能には影響しない)
 };
 
 export function getGameEpoch() {
