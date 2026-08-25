@@ -17,7 +17,7 @@ const STATUS_LABEL = {
 export default function Control() {
   const [state, setState] = useState(null);
   const [showHistory, setShowHistory] = useState(false);
-  const [showQuestions, setShowQuestions] = useState(false);
+  const [showQuestions, setShowQuestions] = useState(true);
   const [questionToast, setQuestionToast] = useState(null);
   const [quizDraft, setQuizDraft] = useState(null);
   const joinUrls = useJoinUrl();
@@ -131,23 +131,28 @@ export default function Control() {
         <ThemeToggle />
       </div>
       <div className="control-grid">
-        <div className="card" style={{ maxWidth: "none" }}>
+        <div className="card" style={{ maxWidth: "none", padding: "18px 20px" }}>
           <div className="badge">{STATUS_LABEL[state.status]}</div>
-          <div className="title">{state.quiz.title}</div>
+          <div className="title title-sm">{state.quiz.title}</div>
 
-          <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap", marginBottom: 16 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap", marginBottom: 12 }}>
             <button
               className={`btn-chip ${state.joinCodeEnabled ? "active" : ""}`}
+              style={{ fontSize: "0.8rem", padding: "8px 14px" }}
               onClick={() => socket.emit("host:setJoinCodeEnabled", { enabled: !state.joinCodeEnabled })}
             >
               🔒 参加にセッションIDを必須にする: {state.joinCodeEnabled ? "オン" : "オフ"}
             </button>
             {state.joinCodeEnabled && (
               <>
-                <span className="mono" style={{ fontWeight: 800, fontSize: "1.15rem", letterSpacing: "0.15em" }}>
+                <span className="mono" style={{ fontWeight: 800, fontSize: "1rem", letterSpacing: "0.15em" }}>
                   {state.joinCode}
                 </span>
-                <button className="btn-chip" onClick={() => socket.emit("host:regenerateJoinCode")}>
+                <button
+                  className="btn-chip"
+                  style={{ fontSize: "0.8rem", padding: "8px 14px" }}
+                  onClick={() => socket.emit("host:regenerateJoinCode")}
+                >
                   再発行
                 </button>
               </>
@@ -156,10 +161,13 @@ export default function Control() {
 
           {state.status === "lobby" && (
             <>
-              <p className="dim">参加者がスマホで参加するのを待っています</p>
+              <p className="dim" style={{ fontSize: "0.85rem" }}>
+                参加者がスマホで参加するのを待っています
+              </p>
               <div className="btn-row">
                 <button
                   className="btn"
+                  style={{ padding: "10px 16px", fontSize: "0.95rem" }}
                   disabled={state.players.length === 0}
                   onClick={() => socket.emit("host:start")}
                 >
@@ -245,16 +253,18 @@ export default function Control() {
           )}
 
           <div className="btn-row">
-            <button className="btn btn-danger" onClick={confirmReset}>
+            <button className="btn btn-danger" style={{ padding: "10px 16px", fontSize: "0.95rem" }} onClick={confirmReset}>
               リセット
             </button>
           </div>
 
           {state.status === "lobby" && joinUrls.length > 0 && (
-            <div style={{ marginTop: 20 }}>
-              <p className="dim">参加用URL(同じWi-Fi内のスマホから):</p>
+            <div style={{ marginTop: 14 }}>
+              <p className="dim" style={{ fontSize: "0.8rem" }}>
+                参加用URL(同じWi-Fi内のスマホから):
+              </p>
               {joinUrls.map((u) => (
-                <p key={u} style={{ fontWeight: 700 }}>
+                <p key={u} style={{ fontWeight: 700, fontSize: "0.85rem" }}>
                   {u}
                 </p>
               ))}
@@ -294,9 +304,9 @@ export default function Control() {
       </div>
 
       {showQuestions && (
-        <div className="card" style={{ width: "100%", maxWidth: 1100, margin: "20px auto 0" }}>
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8 }}>
-            <div className="title" style={{ fontSize: "1.1rem", margin: 0 }}>
+        <div className="card" style={{ width: "100%", maxWidth: 1100, margin: "20px auto 0", padding: "28px 28px" }}>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8, flexWrap: "wrap" }}>
+            <div className="title" style={{ fontSize: "1.4rem", margin: 0 }}>
               質問一覧 ({state.questions?.length ?? 0})
             </div>
             <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
@@ -322,10 +332,10 @@ export default function Control() {
               )}
             </div>
           </div>
-          <p className="dim" style={{ fontSize: "0.8rem", marginTop: 8 }}>
+          <p className="dim" style={{ fontSize: "0.9rem", marginTop: 8 }}>
             質問を選ぶと表示画面の中央に映せます
           </p>
-          <ul style={{ listStyle: "none", padding: 0, marginTop: 12, display: "flex", flexDirection: "column", gap: 10 }}>
+          <ul style={{ listStyle: "none", padding: 0, marginTop: 16, display: "flex", flexDirection: "column", gap: 14 }}>
             {(state.questions ?? []).map((q) => {
               const isFeatured = state.featuredQuestionId === q.id;
               return (
@@ -334,17 +344,19 @@ export default function Control() {
                   style={{
                     background: "var(--bg-soft)",
                     border: `1px solid ${isFeatured ? "var(--accent)" : "var(--border)"}`,
-                    borderRadius: "var(--radius-sm)",
-                    padding: "10px 14px",
+                    borderRadius: "var(--radius)",
+                    padding: "18px 20px",
                   }}
                 >
                   <div style={{ display: "flex", justifyContent: "space-between", gap: 8 }}>
-                    <span style={{ fontWeight: 700 }}>{q.name}</span>
-                    <span className="dim mono" style={{ fontSize: "0.8rem" }}>
+                    <span style={{ fontWeight: 700, fontSize: "1.05rem" }}>{q.name}</span>
+                    <span className="dim mono" style={{ fontSize: "0.85rem" }}>
                       {new Date(q.createdAt).toLocaleTimeString("ja-JP", { hour: "2-digit", minute: "2-digit" })}
                     </span>
                   </div>
-                  <p style={{ margin: "6px 0 10px", whiteSpace: "pre-wrap" }}>{q.text}</p>
+                  <p style={{ margin: "10px 0 14px", fontSize: "1.3rem", fontWeight: 600, lineHeight: 1.5, whiteSpace: "pre-wrap" }}>
+                    {q.text}
+                  </p>
                   <button
                     className={`btn ${isFeatured ? "" : "btn-secondary"}`}
                     style={{ width: "100%" }}
